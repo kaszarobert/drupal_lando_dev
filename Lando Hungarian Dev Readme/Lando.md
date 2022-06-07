@@ -778,20 +778,22 @@ http://192.168.1.4:49159
 ### Hibás konténerek újraépítése
 
 Előfordulhat, hogyha nem rendesen állítottuk le a konténereket lando stop paranccsal, akkor sérült lehet pár bináris állomány a konténerben, amiért többé az nem működik. Pl. 
-- nem indul be az adatbázis-szerver, a konzolon a lando azt írja többször ki folyamatosan percek óta, hogy "Waiting until database service is ready...". 
+- nem indul be az adatbázis-szerver, a konzolon a lando azt írja többször ki folyamatosan percek óta, hogy `Waiting until database service is ready...`. 
 - Esetleg az oldal 404 page not found-ot ír, miközben a PHP fájlok ott vannak a szerveren.
-- Ilyet ír a konzol: Warning: copy(https://getcomposer.org/installer): Failed to open stream: php_network_getaddresses: getaddrinfo for getcomposer.org failed: Temporary failure in name resolution in Command line code on line 1
+- Ilyet ír a konzol: `Warning: copy(https://getcomposer.org/installer): Failed to open stream: php_network_getaddresses: getaddrinfo for getcomposer.org failed: Temporary failure in name resolution in Command line code on line 1
 Could not open input file: /tmp/composer-setup.php
-ERROR ==> Could not open input file: /tmp/composer-setup.php
-- curl hibák jelentkeznek minden hívásra: GuzzleHttp\Exception\ConnectException: cURL error 6: Could not resolve host: updates.drupal.org (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) in GuzzleHttp\Handler\CurlFactory::createRejection() (line 200 of /app/vendor/guzzlehttp/guzzle/src/Handler/CurlFactory.php).
+ERROR ==> Could not open input file: /tmp/composer-setup.php`
+- curl hibák jelentkeznek minden hívásra: `GuzzleHttp\Exception\ConnectException: cURL error 6: Could not resolve host: updates.drupal.org (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) in GuzzleHttp\Handler\CurlFactory::createRejection() (line 200 of /app/vendor/guzzlehttp/guzzle/src/Handler/CurlFactory.php)`.
 
-1. próbálkozás:
+Ez WSL2 (Windows Subsystem for Linux) alatt futó dockerrel szokott előjönni sajnos gyakran.
+
+1. próbálkozás javításra:
 
 ```
 lando rebuild -y
 ```
 
-2. próbálkozás: ha az előző se segít, akkor próbáljuk újrabuildelni őket:
+2. próbálkozás javításra: ha az előző se segít, akkor próbáljuk újrabuildelni őket:
 
 ```
 lando poweroff
