@@ -39,7 +39,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 
 ### Alap környezet
 
-Pl. drupal1.localhost URL-re, PHP 8, MariaDb 10.3, Composer 2-es környezet kialakítása:
+Pl. drupal1.localhost URL-re, PHP 8.1, MariaDb 10.3, Composer 2-es környezet kialakítása:
 
 A gyökér mappában hozzunk létre egy `.lando.yml` nevű fájlt ezzel a tartalommal (vigyázzunk, hogy a bekezdések ne Tab karaketerrel, hanem szóközzel legyenek):
 
@@ -48,7 +48,7 @@ name: drupal1
 recipe: drupal9
 config:
   webroot: web
-  php: '7.4'
+  php: '8.1'
   database: mariadb:10.3
   composer_version: '2.3.5'
 
@@ -254,7 +254,7 @@ A `services:` alá ez kerüljön: (A solr core neve itt `drupal9`, és a core co
 
 ```
   solr:
-    type: solr:8.6.0
+    type: solr:8.11.0
     core: drupal9
     portforward: true
     config:
@@ -761,10 +761,12 @@ lando info
 ```
 
 Valami ilyesmit kell kapni erre:
+```
  APPSERVER URLS   https://localhost:49158
-                                     http://localhost:49159
-                                     http://drupal1.localhost/
-                                     https://drupal1.localhost/
+                  http://localhost:49159
+                  http://drupal1.localhost/
+                  https://drupal1.localhost/
+```
 
 Ez megmondja, melyik portról érhető el az oldal. Pl. a HTTP verzió a 49159-en, tehát mobilról az oldaladat így tudod megnyitni:
 
@@ -946,7 +948,7 @@ mkdir -p web/sites/simpletest/browser_output
 
 #### Használat
 
-Pl. a 4 fajta tesztre, amit a Drupal tud - ha mind zöld és OK, akkor működik minden. A `lando test` helyett `lando testdebug` paranccsal HTML-kimenetet is generál, valamint hiba esetén kiírja a konkrét hibát a teszt debugolás végett.
+Pl. a 4 fajta tesztre, amit a Drupal tud - ha mind zöld és OK, akkor működik minden. A `lando test` helyett `lando testdebug` paranccsal hiba esetén kiírja a konkrét hibát a teszt debugolás végett.
 
 ```
 lando test web/core/modules/node/tests/src/Unit/NodeOperationAccessTest.php
