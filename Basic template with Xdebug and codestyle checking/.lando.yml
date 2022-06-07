@@ -1,0 +1,56 @@
+# For each website in Lando, replace "drupal1" with a unique name.
+name: drupal1
+recipe: drupal9
+config:
+  webroot: web
+  php: '7.4'
+  database: mariadb:10.3
+  xdebug: off
+  composer_version: '1.10.26'
+  config:
+    php: .lando/php.ini
+
+services:
+  appserver:
+    overrides:
+      environment:
+        # Support debugging Drush with XDEBUG.
+        PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_MODE:
+
+  database:
+    creds:
+      user: drupal1
+      password: drupal1
+      database: drupal1
+    config:
+      # Set a default character collation.
+      database: .lando/my_custom.cnf
+
+  phpmyadmin:
+    type: phpmyadmin:5.1
+    hosts:
+      - database
+
+proxy:
+  appserver:
+    - drupal1.localhost
+  phpmyadmin:
+    - pma.drupal1.localhost
+
+tooling:
+  xdebug:
+    description: Loads Xdebug in the selected mode.
+    cmd: 
+      - appserver: /app/.lando/xdebug.sh
+    user: root
+  phpcs:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcs --standard=Drupal"
+    options:
+    description: Run phpcs for given folder or file.
+  phpcbf:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcbf --standard=Drupal"
+    options:
+    description: Run phpcbf for given folder or file.
