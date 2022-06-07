@@ -1,0 +1,45 @@
+name: drupaltest
+recipe: drupal9
+config:
+  webroot: web
+  php: '8.1'
+  database: mysql:8.0
+  xdebug: off
+  composer_version: '2'
+
+services:
+  appserver:
+    overrides:
+      environment:
+        SIMPLETEST_BASE_URL: "http://drupaltest.lndo.site"
+        SIMPLETEST_DB: "mysql://drupal9:drupal9@database/drupal9"
+        BROWSERTEST_OUTPUT_DIRECTORY: '/app/web/sites/simpletest/browser_output'
+        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chrome:9515"]'
+  chrome:
+    type: compose
+    services:
+      image: drupalci/webdriver-chromedriver:production
+      command: chromedriver --log-path=/tmp/chromedriver.log --verbose --allowed-origins=* --whitelisted-ips=
+
+  phpmyadmin:
+    type: phpmyadmin:5.0
+    hosts:
+      - database
+
+proxy:
+  appserver:
+    - drupaltest.localhost
+    - drupaltest.lndo.site
+  phpmyadmin:
+    - pma.drupaltest.localhost
+
+tooling:
+  testdebug:
+   service: appserver
+   cmd: "php /app/vendor/bin/phpunit -v -c /app/phpunit.xml"
+  test:
+   service: appserver
+   cmd: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
+  phpunit:
+   service: appserver
+   cmd: "/app/vendor/bin/phpunit"
