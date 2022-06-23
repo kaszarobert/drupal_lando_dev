@@ -976,3 +976,59 @@ Vagy úgy is futtathatsz modul tesztet, hogy a modul útvonalát adod meg:
 ```
 lando test web/modules/contrib/commerce
 ```
+
+### Google Cloud SDK Landoval
+
+#### Beállítás
+
+A `services:` alá ez kerüljön:
+
+```
+  cloud-sdk:
+    type: compose
+    app_mount: delegated
+    services:
+      image: google/cloud-sdk:389.0.0
+      command: tail -f /dev/null
+    volumes:
+      cloud-sdk:
+
+```
+
+A `tooling:` alá ez kerüljön:
+
+```
+  gcloud:
+    service: cloud-sdk
+  gsutil:
+    service: cloud-sdk
+
+```
+
+Majd újra kell buildelned a Lando projekteket: `lando rebuild -y`
+
+
+#### Használat
+
+Ugyanúgy kell mindent csinálni, mind simán a gcloud, gsutil konzol-alkalmazásokkal, csak elé kell írnod, hogy lando.
+
+Először autentikálni kell magad: (https://stackoverflow.com/questions/71561730/authorizing-client-libraries-without-access-to-a-web-browser-gcloud-auth-appli)
+
+
+```
+lando gcloud init --console-only
+```
+
+Kilistázni, mely fiókokkal vagy autentikálva:
+
+```
+lando gcloud auth list
+```
+
+Ha itt már szerepelnek fiókok, akkor végezhetsz a jogosultságodnak megfelelő műveleteket.
+
+Pl. CORS-beállítások lekérése egy GCS buckethez:
+
+```
+lando gsutil cors get gs://mybucket123
+```
