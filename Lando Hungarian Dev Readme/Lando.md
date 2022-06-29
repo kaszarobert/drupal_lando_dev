@@ -15,6 +15,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 | Minden site lekapcsolása | `lando poweroff` |
 | SSH az appserver konténerbe | `lando ssh` |
 | SSH a solr konténerbe | `lando ssh -s solr` |
+| SSH a solr konténerbe root felhasználóval | `lando ssh -s solr --user root` |
 | Composer futtatása konténerből | `lando composer` |
 | Drush futtatása konténerből | `lando drush` |
 | NPM/Gulp futtatása konténerből | `lando npm` |
@@ -1031,4 +1032,62 @@ Pl. CORS-beállítások lekérése egy GCS buckethez:
 
 ```
 lando gsutil cors get gs://mybucket123
+```
+
+### Amazon Web Services CLI Landoval
+
+#### Beállítás
+
+A `services:` illesszük be ezt:
+
+```
+  aws:
+    scanner: false
+    type: compose
+    app_mount: delegated
+    services:
+      user: root
+      image: amazon/aws-cli:2.7.11
+      command: tail -f /dev/null
+      volumes:
+        - aws:/root/.aws
+      environment:
+        LANDO_DROP_USER: root
+    volumes:
+      aws:
+
+```
+
+A `tooling:` illesszük be ezt:
+
+```
+  aws:
+    service: aws
+    user: root
+
+```
+
+Ne felejtsd újraépíteni a projektet: `lando rebuild -y`
+Projekt újraépítéskor nem vesznek el az aws beállításai, mivel volume-ba van téve az a mappa.
+
+#### Használat
+
+Ugyanúgy kell mindent csinálni, mind simán az aws konzol-alkalmazással, csak elé kell írnod, hogy lando.
+
+Először autentikálni kell magad:
+
+```
+lando aws configure
+```
+
+A létező konfigurációt ki is listázhatod:
+
+```
+lando aws configure list
+```
+
+Pl.: elérhető S3 bucketek kilistázása:
+
+```
+lando aws s3api list-buckets --query "Buckets[].Name"
 ```
