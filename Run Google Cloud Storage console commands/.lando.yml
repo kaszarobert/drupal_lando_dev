@@ -1,0 +1,28 @@
+name: drupalgcs
+recipe: drupal9
+config:
+  webroot: web
+  php: '8.1'
+  database: mysql:8.0
+  xdebug: off
+  composer_version: '2'
+
+services:
+  cloud-sdk:
+    type: compose
+    app_mount: delegated
+    services:
+      image: google/cloud-sdk:389.0.0
+      command: tail -f /dev/null
+    volumes:
+      cloud-sdk:
+
+proxy:
+  appserver:
+    - drupalgcs.localhost
+
+tooling:
+  gcloud:
+    service: cloud-sdk
+  gsutil:
+    service: cloud-sdk

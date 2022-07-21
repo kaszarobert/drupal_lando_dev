@@ -15,6 +15,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 | Minden site lekapcsolása | `lando poweroff` |
 | SSH az appserver konténerbe | `lando ssh` |
 | SSH a solr konténerbe | `lando ssh -s solr` |
+| SSH a solr konténerbe root felhasználóval | `lando ssh -s solr --user root` |
 | Composer futtatása konténerből | `lando composer` |
 | Drush futtatása konténerből | `lando drush` |
 | NPM/Gulp futtatása konténerből | `lando npm` |
@@ -1109,4 +1110,118 @@ Vagy úgy is futtathatsz modul tesztet, hogy a modul útvonalát adod meg:
 
 ```
 lando test web/modules/contrib/commerce
+```
+
+### Google Cloud SDK Landoval
+
+#### Beállítás
+
+A `services:` alá ez kerüljön:
+
+```
+  cloud-sdk:
+    type: compose
+    app_mount: delegated
+    services:
+      image: google/cloud-sdk:389.0.0
+      command: tail -f /dev/null
+    volumes:
+      cloud-sdk:
+
+```
+
+A `tooling:` alá ez kerüljön:
+
+```
+  gcloud:
+    service: cloud-sdk
+  gsutil:
+    service: cloud-sdk
+
+```
+
+Majd újra kell buildelned a Lando projekteket: `lando rebuild -y`
+
+
+#### Használat
+
+Ugyanúgy kell mindent csinálni, mind simán a gcloud, gsutil konzol-alkalmazásokkal, csak elé kell írnod, hogy lando.
+
+Először autentikálni kell magad: (https://stackoverflow.com/questions/71561730/authorizing-client-libraries-without-access-to-a-web-browser-gcloud-auth-appli)
+
+
+```
+lando gcloud init --console-only
+```
+
+Kilistázni, mely fiókokkal vagy autentikálva:
+
+```
+lando gcloud auth list
+```
+
+Ha itt már szerepelnek fiókok, akkor végezhetsz a jogosultságodnak megfelelő műveleteket.
+
+Pl. CORS-beállítások lekérése egy GCS buckethez:
+
+```
+lando gsutil cors get gs://mybucket123
+```
+
+### Amazon Web Services CLI Landoval
+
+#### Beállítás
+
+A `services:` illesszük be ezt:
+
+```
+  aws:
+    scanner: false
+    type: compose
+    app_mount: delegated
+    services:
+      user: root
+      image: amazon/aws-cli:2.7.11
+      command: tail -f /dev/null
+      volumes:
+        - aws:/root/.aws
+      environment:
+        LANDO_DROP_USER: root
+    volumes:
+      aws:
+
+```
+
+A `tooling:` illesszük be ezt:
+
+```
+  aws:
+    service: aws
+    user: root
+
+```
+
+Ne felejtsd újraépíteni a projektet: `lando rebuild -y`
+Projekt újraépítéskor nem vesznek el az aws beállításai, mivel volume-ba van téve az a mappa.
+
+#### Használat
+
+Ugyanúgy kell mindent csinálni, mind simán az aws konzol-alkalmazással, csak elé kell írnod, hogy lando.
+
+Először autentikálni kell magad:
+
+```
+lando aws configure
+```
+
+A létező konfigurációt ki is listázhatod:
+
+```
+lando aws configure list
+```
+
+Pl.: elérhető S3 bucketek kilistázása:
+
+```
+lando aws s3api list-buckets --query "Buckets[].Name"
 ```

@@ -1,0 +1,32 @@
+name: drupalaws
+recipe: drupal9
+config:
+  webroot: web
+  php: '8.1'
+  database: mysql:8.0
+  xdebug: off
+  composer_version: '2'
+
+  aws:
+    scanner: false
+    type: compose
+    app_mount: delegated
+    services:
+      user: root
+      image: amazon/aws-cli:2.7.11
+      command: tail -f /dev/null
+      volumes:
+        - aws:/root/.aws
+      environment:
+        LANDO_DROP_USER: root
+    volumes:
+      aws:
+
+proxy:
+  appserver:
+    - drupalgcs.localhost
+
+tooling:
+  aws:
+    service: aws
+    user: root
