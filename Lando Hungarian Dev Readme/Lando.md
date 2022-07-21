@@ -520,7 +520,7 @@ Ha nem webpack, hanem vite-alapú projektet építünk, akkor ott a vite.config.
 
 ### xdebug PHP extension hozzáadása az appserverhez
 
-#### Beállítás
+#### 1. Alap beállítás
 
 A debugolás Xdebug 3 esetén a 9003-as porton fog futni alapból, így phpStormban is azt a portot kell beállítani rá.
 
@@ -587,9 +587,143 @@ Engedélyezzük a szkript futtatását a `chmod +x .lando/xdebug.sh` paranccsal!
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
-#### Használat
+#### 2. Windows esetén
 
-Ezentúl ahányszor indítjuk a projektet, az appserver konténeren belül bekapcsolható lesz az xdebug  `lando xdebug debug` parancsot futtatva. Ez bekapcsolja a böngészőhöz és a CLI-hez is a PHP szkriptek debugolását. Kikapcsolható az xdebug menet közben a `lando xdebug off` paranccsal. Nincs szükség a böngészőben az xdebug helper extensionre sem (az xdebug.start_with_request beállításával).
+Windows alatt ha WSL2-ben futtatjuk a környezetet 2 féle módon lehet debugolni:
+1. Windows alatt futtatjuk a phpStormot
+   
+   Így debugoláshoz elérhetővé kell tenni Windows számára a docker unix socketet, xdebugot át kell állítani a Windows-os IP-címre, valamint minden Windows újraindítás alkalmával a megváltozó Windows-os IP-cím miatt újra kell építeni MINDIG a projektet.
+
+2. WSL2 alatt futtatjuk a phpStormot
+   
+   GWSL vagy VCXSRV XServert kell Windows-ra telepíteni, amivel a Linuxon futó phpStorm ablakát lehet megjeleníteni. Előfordulhat, hogy a gép alvó állapotból ébresztése után eltűnnek az így megnyitott ablakok, illetve a vágólappal is gond lehet néha, de cserébe mindent ugyanúgy kell a phpStormba állítani, mintha Linuxos gépen használnád, így nem kell újraépíteni a projektet minden nap.
+
+A továbbiakban részletezem az egyes módszerek esetén mit kell telepíteni, beállítani. Linuxos gépen ez nem kell, az esetben ugorj a "3. phpStorm beállítása debugolásra" fejezetre.
+
+##### 2.1 Windows-on futtatott phpStorm esetén további szükséges beállítás
+
+Mivel így a webszerver egy docker konténeren belül fut a WSL2 virtuális gépen, ezért:
+
+1. A docker socketet elérhetővé kell tenni Windows alatt: (https://gist.github.com/styblope/dc55e0ad2a9848f2cc3307d4819d819f)
+  
+  ```
+  sudo nano /etc/docker/daemon.json
+  ```
+
+  A fájl tartalma legyen a következő:
+
+```
+  {"hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]}
+```
+
+  Ctrl + X majd Y és Enter a mentéshez. Majd:
+
+  ```
+  sudo service docker restart
+  ```
+
+2. A Windows-os IP-re kell, hogy az xdebug csatlakozzon a client_host beállításával. Ám a jelenlegi IP-cím bármikor megváltozhat, ezért ezt nem jó statikusan beégetni egy fájlba. Helyette hozzunk létre változót ezzel az IP-címmel WSL-ben a .bashrc-ben (https://github.com/lando/lando/issues/1723#issuecomment-821823611):
+
+  ```
+  nano ~/.bashrc
+  ```
+
+  Adjuk hozzá a következő sort:
+
+  ```
+  # Set correct Host IP
+  export HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}')
+  ```
+
+  Ctrl + X majd Y és Enter a mentéshez. 
+  Majd töltsük újra a fájlt a konzol ablakban:  
+  ```
+  source ~/.bashrc
+  ```
+
+3. Mivel ez Windows-specifikus dolog, ezért ezt ne tegyük a fő `.lando.yml` fájlba (mert az a Linuxot használó kollégáknak rontaná el a debugolást), hanem egy mappában azzal a fájllal hozzunk létre egy `.lando.local.yml` fájlt, amiben ezt az 1 felülírást megcsináljuk ezzel a tartalommal (https://github.com/lando/lando/issues/1723#issuecomment-821823611):
+
+  ```
+  services:
+    appserver:
+      overrides:
+        environment:
+          XDEBUG_CONFIG: client_host=${WSL_IP}
+
+  ```
+
+Ezt a `.lando.local.yml` fájlt tegyük a .gitignore-ba és ne commitoljuk!
+
+Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
+
+Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Windows-t, `lando rebuild -y` paranccsal újra kell építeni a projektet a megváltozó IP-cím miatt.
+
+##### 2.2 WSL2 alatt futtatjuk a phpStormot
+
+1. telepítsük fel Windowsra a GWSL-t: https://opticos.github.io/gwsl/ és indítsuk el! Ha nem akarsz a Windows Store-ból telepíteni, akkor használhatod a vcxsrv programot is https://sourceforge.net/projects/vcxsrv/ Ezek teszik lehetővé, hogy a konzolról indíthass grafikus alkalmazásokat, amik így Linux alatt fognak futni.
+2. telepítsük fel a phpstormot a WSL2-ben (NEM Windows alatt!): https://www.jetbrains.com/help/phpstorm/installation-guide.html#snap
+3. WSL2 konzolból a `phpstorm` parancsot beírva tudjuk elindítani a programot.
+
+#### 3. phpStorm beállítása debugolásra
+
+1. Docker beállítása: File > Settings ablakban Build, Execution, Deployment > Docker részben jobb oldalt nyomjuk meg a + gombot és a Connect to Docker daemon with:
+   
+  - Linux és WSL2 alatt futtatott phpStorm esetén: Unix socket
+
+  - Windows-on futó phpStorm esetén: TCP socket, és Engine API URL: `tcp://localhost:2375` vagy `tcp://0.0.0.0:2375`
+
+  Ha "Connection successful" választ írja, akkor sikeres a kapcsolódás a Dockerhez.
+  
+  Nyomj az OK gombra a mentéshez.
+
+2. PHP környezet beállítása
+  File > Settings ablakban Languages & Frameworks > PHP részben jobb oldalt:
+  
+  - PHP Language level: használt PHP-verió
+  
+  - CLI interpreter: 
+  
+     1) nyomjuk meg a ... gombot!
+   
+     2) A megjelenő ablakban bal oldalt a + gombra kattintva válasszuk a "From Docker, Vagrant ..." opciót!
+   
+     3) SSH helyett válasszuk ki a Docker radio buttont!
+   
+     4) Server: legyen az 1. pontban létrehozott Docker.
+   
+     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4"
+   
+     6) Mentsük el OK-val mindent.
+
+3. Debug port beállítása
+
+   File > Settings ablakban Languages & Frameworks > PHP > Debug részben jobb oldalt az Xdebug szekcióban a Debug port: 9003 legyen!
+
+4. Szerver fájl mapping beállítása
+
+   File > Settings ablakban Languages & Frameworks > PHP > Servers részben jobb oldalt:
+
+   - Nyomjuk meg a + gombot!
+
+   - Name: virtual host neve, pl. drupal1.localhost
+
+   - Host: ugyanaz
+
+   - Port: 80
+
+   - Debugger: Xdebug
+
+   - Pipáljuk be a "Use path mappings" opciót!
+
+   - A megjelenő 2 oszlopos táblázatban a projekt főmappájához (ahol a `.lando.yml` van) írjuk be jobb oldali oszlopba (Absolute path on server) azt, hogy `/app`
+
+5. Kattintsunk a kék OK-ra a mentéshez!
+
+#### 4. Használat
+
+Ezentúl ahányszor indítjuk a projektet, az appserver konténeren belül bekapcsolható lesz az xdebug  `lando xdebug debug` parancsot futtatva. Ez bekapcsolja a böngészőhöz és a CLI-hez is a PHP szkriptek debugolását. Kikapcsolható az xdebug menet közben a `lando xdebug off` paranccsal. Nincs szükség a böngészőben az xdebug helper extensionre sem (mivel az xdebug.start_with_request lett beállítva a php.ini-ben).
+
+phpStormban debugolás engedélyezéséhez: Run > Start listening for PHP debug connections menüpontra, vagy az eszköztáron erre a piros sarkú ikonra kattintsunk. Ugyanerre kattintva letilthatjuk a debugolást.
 
 Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: "Portok megnyitása a konténerben futtatott szerverekre" fejezet.
 
