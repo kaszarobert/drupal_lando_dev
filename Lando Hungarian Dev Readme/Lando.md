@@ -692,7 +692,7 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
    
      4) Server: legyen az 1. pontban létrehozott Docker.
    
-     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4"
+     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4" ha az alapértelmezett van használva a `.lando.yml` fájlban. Ezért mindenképpen ellenőrizzük le a `.lando.yml` fájlban, hogy nem-e használ az oldal saját image-et, mert akkor azt kell itt megadni!
    
      6) Mentsük el OK-val mindent.
 
