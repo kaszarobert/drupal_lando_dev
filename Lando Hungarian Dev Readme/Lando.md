@@ -825,14 +825,14 @@ Ha konzolból akarod futtatni, csinálhatunk rá parancsot a landohoz, hogy ne k
 ```
   phpcs:
     service: appserver
-    cmd: "/app/vendor/bin/phpcs --standard=Drupal"
+    cmd: "/app/vendor/bin/phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md"
     options:
     description: Run phpcs for given folder or file.
   phpcbf:
     service: appserver
-    cmd: "/app/vendor/bin/phpcbf --standard=Drupal"
+    cmd: "/app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md"
     options:
-    description: Run phpcbf for given folder or file.
+    description: Run phpcs for given folder or file.
 ```
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
