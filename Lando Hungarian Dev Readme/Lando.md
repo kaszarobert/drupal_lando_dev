@@ -356,7 +356,7 @@ A `services:` alá ez kerüljön:
       vcl: .lando/default.vcl
     overrides:
       environment:
-        VARNISH_BACKEND_HOST: appserver
+        VARNISH_BACKEND_HOST: drupal1_appserver_1
         VARNISH_BACKEND_PORT: 80
         VARNISH_ALLOW_UNRESTRICTED_PURGE: 1
         VARNISHD_PARAM_HTTP_RESP_HDR_LEN: 65536
@@ -365,6 +365,10 @@ A `services:` alá ez kerüljön:
         VARNISHD_VCL_SCRIPT: "/etc/varnish/lando.vcl"
 
 ```
+
+Ezért a `VARNISH_BACKEND_HOST` mellé ezen projekt appserver konténer nevét kell megadni - tehát cseréld le a kódmintában szereplő `drupal1`-et a Landofile tetején levő `name:` kulcsában megadott projektnévre!
+
+Ismert hiba https://github.com/lando/varnish/issues/5: ha a VARNISH_BACKEND_HOST: appserver lenne, és más Lando projektek is futnak appserver nevű service-el, akkor a Varnish nem biztos, hogy az aktuális projekt appserverére fog mutatni valamiért. Ezért használjuk inkább a konténer nevét. Ha még így is más oldalat nyitna meg, akkor a jelenlegi oldalnál `lando poweroff && lando start` módon lehet átmenetileg javítani a problémát.
 
 A `proxy:` alá ez kerüljön:
 
@@ -402,15 +406,6 @@ Ne felejtsük el, hogy a /admin/config/development/performance oldalon ne "no-ca
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
 Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: "Portok megnyitása a konténerben futtatott szerverekre" fejezet.
-
-#### Ismert hiba https://github.com/lando/varnish/issues/5: ha több appserver fut egyéb Lando projektekkel, akkor a Varnish konténerből nem biztos, hogy az aktuális projekt appserverére mutat valamiért. Ezért varnish-t használó projekt esetén:
-
-```
-lando poweroff
-lando start
-```
-
-És ne indíts el más projektet egyszerre, hogy a Varnish jól működjön!
 
 ### Redis hozzáadása
 
