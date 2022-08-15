@@ -1,0 +1,99 @@
+name: magento
+recipe: drupal9
+config:
+  webroot: .
+  php: '8.1'
+  database: mariadb:10.4
+  composer_version: '2'
+  xdebug: off
+  config:
+    php: .lando/php.ini
+    database: .lando/my_custom.cnf
+
+services:
+  appserver:
+    overrides:
+      build: ./.lando/php
+      image: my/php:8.1-magento
+      environment:
+        # Support debugging Drush with XDEBUG.
+        PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_MODE:
+
+  database:
+    creds:
+      user: magento
+      password: magento
+      database: magento
+    config:
+      database: .lando/my_custom.cnf
+
+  phpmyadmin:
+    type: phpmyadmin:5.1
+    hosts:
+      - database
+
+  elasticsearch:
+    type: elasticsearch:7
+    portforward: false
+    mem: 512m
+    plugins: []
+
+proxy:
+  appserver:
+    - magento.localhost
+  phpmyadmin:
+    - pma.magento.localhost
+  elasticsearch:
+    - elasticsearch.magento.localhost:9200
+
+tooling:
+  xdebug:
+    description: Loads Xdebug in the selected mode.
+    cmd:
+      - appserver: /app/.lando/xdebug.sh
+    user: root
+
+  magento:setup:quick:
+    description: Automated process to quickly configure Magento for Lando. This command accepts `./bin/magento setup:install` arguments
+    cmd: /app/bin/magento setup:install --db-host database --db-name magento --db-user magento --db-password magento --admin-firstname=admin --admin-lastname=admin --admin-email=admin@example.com --admin-user=admin --admin-password=admin123 --language=en_US --currency=EUR --timezone=Europe/Bratislava --use-rewrites=1 --search-engine=elasticsearch7 --elasticsearch-host=elasticsearch --elasticsearch-port=9200 --elasticsearch-index-prefix=magento2 --elasticsearch-timeout=15
+    service: appserver
+
+  magento:
+    description: Execute ./bin/magento commands
+    cmd: /app/bin/magento
+    service: appserver
+
+  magento:setup:destroy:
+    description: Automated process to quickly reset Magento's database to empty.
+    cmd: /app/bin/magento setup:uninstall
+    service: appserver
+
+  magento-cron:
+    description: Runs magento cron.
+    cmd: /app/bin/magento cron:run 2>&1
+    service: appserver
+
+# -- Install from scratch:
+# lando start
+# lando composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition --no-install
+# Make sure to move that composer.json to this root folder where the Landofile is.
+# lando composer install
+# lando magento:setup:quick
+
+# -- Install from repo or existing database:
+# lando start
+# lando composer install
+# // Import database.
+
+# -- Turn off 2FA, so you can enter the admin area.
+# lando magento module:disable Magento_TwoFactorAuth
+# lando magento config:set admin/security/password_is_forced 0
+# lando magento config:set admin/security/password_lifetime 0
+# lando magento module:disable Magento_TwoFactorAuth
+# lando magento indexer:reindex
+# lando magento c:c
+
+# -- Run cron indexer:
+# lando magento indexer:reindex
+# lando magento cache:flush
