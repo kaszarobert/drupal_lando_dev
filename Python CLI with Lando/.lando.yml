@@ -1,0 +1,13 @@
+name: python1
+
+services:
+  python:
+    type: python:3
+    command: tail -f /dev/null
+
+tooling:
+  python:
+    service: python
+
+# This is how you can run scripts:
+# lando python python1.py
