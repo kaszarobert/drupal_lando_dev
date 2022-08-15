@@ -887,7 +887,7 @@ PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibák
   - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/opt/project/vendor/bin/phpcbf`
 - Editor > Inspections > PHP > Quality Tools > PHP_CodeSniffer legyen bepipálva, és jobb oldalt:
   - Show warning as: `Weak warning`
-  - Check files with extensions: `php,js,css,inc,module,theme`
+  - Check files with extensions: `php,module,inc,install,test,profile,theme,css,info,txt,md`
   - Coding standard: `Custom`, majd a mellette lévő ... gombra kattintva az ablakban:
   - Path to ruleset: `/opt/project/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml`
 
