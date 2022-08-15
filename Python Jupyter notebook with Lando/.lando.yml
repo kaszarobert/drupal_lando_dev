@@ -1,0 +1,26 @@
+name: jupyter
+
+services:
+  python:
+    type: python:3
+    command: tail -f /dev/null
+    scanner: false
+    run:
+      - pip install jupyter
+
+proxy:
+  python:
+    - jupyter.localhost
+
+tooling:
+  python:
+    service: python
+  jupyter:
+    service: python
+  jn:
+    service: python
+    cmd: "jupyter notebook --port=80 --ip='*' --NotebookApp.token='' --NotebookApp.password=''"
+
+# This is how you can run Jupyter Notebook server:
+# lando jn
+# After this open it in a browser. Jupyter Notebook server URL is under proxy:
