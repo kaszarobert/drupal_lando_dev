@@ -320,10 +320,10 @@ Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 Ha a szerveren a localhoston fut a solr, akkor úgy legyen a git repoban becommitolva. És a lando fejlesztői környezetben pedig írjuk felül a solr szerver címét settings.php-ben:
 
 ```
-$config['search_api.server.solr_content']['backend_config']['connector_config']['host'] = 'solr';
+$config['search_api.server.solr_content']['backend_config']['connector_config']['host'] = '<projektnev>_solr_1';
 ```
 
-... ahol solr_content a machine ID-ja a beállított Search API Solr szervernek.
+... ahol `<projektnev>` helyett add meg a Landofile tetején levő `name:` kulcsában megadott projektnevet. Hacsak a service nevével hivatkoznánk (solr), úgy 2 solr-os projektnél 404-es hibát kapnánk, azért kell a konténer nevét megadni itt.
 
 Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: "Portok megnyitása a konténerben futtatott szerverekre" fejezet.
 
