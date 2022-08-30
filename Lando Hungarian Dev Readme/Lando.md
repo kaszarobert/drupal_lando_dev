@@ -8,6 +8,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
   + [Alap környezet](#alap-környezet)
   + [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
   + [Másik fajta adatbázis-szerver beállítása](#másik-fajta-adatbázis-szerver-beállítása)
+  + [Adatbázis-mentés](#adatbázis-mentés)
   + [MySQL/MariaDB slow query log bekapcsolása](#mysql-mariadb-slow-query-log-bekapcsolása)
   + [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
   + [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
@@ -165,6 +166,28 @@ database: mysql:8.0
 Az előbbiekben említett collation beállítása nagyon fontos. Régi mariadb-k `latin1_swedish_ci`-t használnak, az újabb MySQL pedig `utf8mb4_0900_ai_ci`-t. Ezért feltétlenül legyen beállítva a közös, `utf8mb4_general_ci`.
 
 Ha már létező adatbázis-szervert akarunk cserélni, akkor dumpot kell készíteni az eddigiről, és újrabuildelni a projektet (`lando rebuild -y`), majd visszaimportálni a dumpot.
+
+### Adatbázis-mentés
+
+Ez a módszer gyorsabb, mint Drush vagy egyéb PHP-folyamaton keresztül használva, mert a mysqldump és a mysql CLI alkalmazásokat használja.
+
+Tömörített dump készítés a Landofile-ban definiált adatbázisból:
+
+```
+lando db-export adatbazisdump.sql
+```
+
+Dump importálása a Landofile-ban definiált adatbázisba: (itt .gz vagy .tar.gz tömörített dumpot is importálhatunk)
+
+```
+lando db-import adatbazisdump.sql
+```
+
+Dump importálása a Landofile-ban nem az alapértelmezetten definiált nevű "drupal2" adatbázisba: (itt nem importálhatunk tömörített dumpot, csak .sql fájlt)
+
+```
+lando mysql --user=drupal1 --password=drupal1 --database=drupal2 --host=database < adatbazisdump.sql
+```
 
 ### MySQL/MariaDB slow query log bekapcsolása
 
