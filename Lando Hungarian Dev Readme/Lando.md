@@ -9,7 +9,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
   + [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
   + [Másik fajta adatbázis-szerver beállítása](#másik-fajta-adatbázis-szerver-beállítása)
   + [Adatbázis-mentés](#adatbázis-mentés)
-  + [MySQL/MariaDB slow query log bekapcsolása](#mysql-mariadb-slow-query-log-bekapcsolása)
+  + [MySQL/MariaDB slow query log bekapcsolása](#mysqlmariadb-slow-query-log-bekapcsolása)
   + [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
   + [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
   + [NodeJS 10 Gulppal hozzáadása](#nodejs-10-gulppal-hozzáadása)
@@ -21,11 +21,14 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
   + [Webpack NodeJS 16 Vue CLI-vel](#webpack-nodejs-16-vue-cli-vel)
   + [xdebug PHP extension hozzáadása az appserverhez](#xdebug-php-extension-hozzáadása-az-appserverhez)
     - [1. Alap beállítás](#1-alap-beállítás)
-    - [2. Windows esetén](#2-windows-esetén)
+    - [2. Egyéb phpStorm beállítások Windows esetén](#2-egyéb-phpstorm-beállítások-windows-esetén)
       * [2.1 Windows-on futtatott phpStorm esetén további szükséges beállítás](#21-windows-on-futtatott-phpstorm-esetén-további-szükséges-beállítás)
       * [2.2 WSL2 alatt futtatjuk a phpStormot](#22-wsl2-alatt-futtatjuk-a-phpstormot)
     - [3. phpStorm beállítása debugolásra](#3-phpstorm-beállítása-debugolásra)
-    - [4. Használat](#4-használat)
+    - [4. Visual Studio Code beállítása debugolásra](#4-visual-studio-code-beállítása-debugolásra)
+    - [5. Használat](#5-használat)
+      * [5.1 Használat phpStormban](#51-használat-phpstormban)
+      * [5.2 Használat Visual Studio Code-ban](#52-használat-visual-studio-code-ban)
   + [Új PHP extension hozzáadása az appserverhez](#új-php-extension-hozzáadása-az-appserverhez)
   + [wkhtmltopdf telepítése az appserverbe](#wkhtmltopdf-telepítése-az-appserverbe)
   + [Portok megnyitása a konténerben futtatott szerverekre](#portok-megnyitása-a-konténerben-futtatott-szerverekre)
@@ -647,7 +650,7 @@ Engedélyezzük a szkript futtatását a `chmod +x .lando/xdebug.sh` paranccsal!
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
-#### 2. Windows esetén
+#### 2. Egyéb phpStorm beállítások Windows esetén
 
 Windows alatt ha WSL2-ben futtatjuk a környezetet 2 féle módon lehet debugolni:
 1. Windows alatt futtatjuk a phpStormot
@@ -779,13 +782,49 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
 
 5. Kattintsunk a kék OK-ra a mentéshez!
 
-#### 4. Használat
+#### 4. Visual Studio Code beállítása debugolásra
+
+1. VSCODE-ban telepítsd a "PHP Debug" extensiont az Xdebugtól (https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug).
+
+2. Add a projekt főmappájába a .vscode/launch.json fájlt ezzel a tartalommal:
+
+```
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for XDebug (9003)",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "log": true,
+      "pathMappings": {
+        "/app/": "${workspaceRoot}/"
+      }
+    }
+  ]
+}
+```
+
+#### 5. Használat
 
 Ezentúl ahányszor indítjuk a projektet, az appserver konténeren belül bekapcsolható lesz az xdebug  `lando xdebug debug` parancsot futtatva. Ez bekapcsolja a böngészőhöz és a CLI-hez is a PHP szkriptek debugolását. Kikapcsolható az xdebug menet közben a `lando xdebug off` paranccsal. Nincs szükség a böngészőben az xdebug helper extensionre sem (mivel az xdebug.start_with_request lett beállítva a php.ini-ben).
 
+Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: "Portok megnyitása a konténerben futtatott szerverekre" fejezet.
+
+##### 5.1 Használat phpStormban
+
 phpStormban debugolás engedélyezéséhez: Run > Start listening for PHP debug connections menüpontra, vagy az eszköztáron erre a piros sarkú ikonra kattintsunk. Ugyanerre kattintva letilthatjuk a debugolást.
 
-Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: "Portok megnyitása a konténerben futtatott szerverekre" fejezet.
+##### 5.2 Használat Visual Studio Code-ban
+
+1. Menj a Run & Debug tabra (Ctrl + Shift + D)
+
+2. Bal oldalt fenn legyen kiválasztva az, hogy "Listen for XDebug (9003)"
+
+3. Nyomd meg a zöld lejátszásra hasonlító gombot!
+
+Forrás: https://gist.github.com/MatthieuScarset/0c3860def9ff1f0b84e32f618c740655
 
 ### Új PHP extension hozzáadása az appserverhez
 
