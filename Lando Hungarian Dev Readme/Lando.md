@@ -889,8 +889,8 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     xfonts-75dpi \
     xfonts-base \
     && rm -rf /var/lib/apt/lists/*
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/libj/libjpeg-turbo/libjpeg-turbo8_2.0.6-0ubuntu2_amd64.deb
-RUN dpkg -i libjpeg-turbo8_2.0.6-0ubuntu2_amd64.deb
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/libj/libjpeg-turbo/libjpeg-turbo8_2.0.3-0ubuntu1_amd64.deb
+RUN dpkg -i libjpeg-turbo8_2.0.3-0ubuntu1_amd64.deb
 RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN apt --fix-broken install
