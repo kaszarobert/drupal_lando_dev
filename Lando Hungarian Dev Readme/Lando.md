@@ -4,6 +4,8 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 
 * [Parancsok áttekintése](#parancsok--ttekint-se)
 * [Landofile írása](#landofile-írása)
+  + [Hová tegyem őket](#hová-tegyem-őket)
+  + [Szükséges port felszabadítása](#szükséges-port-felszabadítása)
   + [Magyarázat](#magyarázat)
   + [Alap környezet](#alap-környezet)
   + [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
@@ -82,6 +84,30 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 | proxy | Az egyes konténereket milyen URL-el érjük el (mindig a 80-as porton, a belső portokat a Landohoz csatolt Traefik átfordítja mindig a 80-asra. Ezért ezeknek külön URL-t kell megadni) |
 | tooling | Saját parancsok definiálása, és hogy azok melyik konténerben legyenek futtatva. Ezek így futtathatók majd konzolablakban: `lando parancsnev` |
 | services | A sablon konfiguráción kívül megadott extra konténerek. |
+
+### Hová tegyem őket
+
+Javasolt gyűjtőhely a Lando-alapú projekteknek a gépen a `/home/<felhasznalonev>/lando-projects/` mappa.
+Ezen belül minden projekt saját almappába kerüljön. Így biztosított, hogy nem lesz jogosultság-probléma a fájlokkal és a mappákkal. Lando-ban futó szerverek a jelenlegi felhasználóval futtatnak parancsokat, olvasnak/írnak fájlokat.
+
+Ha már volt a gépre Apache szerver telepítve, és a `/var/www/html` is használva volt, akkor se javasolt oda tenni a Lando-alapon futtatott oldalakat. Az oka: az a mappa alapból az Apache saját `www-data` felhasználójához tartozik, nem a jelenlegi felhasználónkhoz. Külön állítgatás nélkül ott a jelenlegi felhasználónkkal csak `sudo chmod -R <fajlutvonal> 777` jogosultságokat állítva tudunk majd a fájlokhoz hozzáférni, ami felesleges bonyodalmat okoz csak.
+
+WSL2-t használva se tegyük a Lando-oldalakat a bemountolt Windows-os NTFS/FAT32 fájlrendszer mappáiba, mert így a fájlműveletek (és ezáltal minden más is) nagyon lassúak lesznek.
+
+### Szükséges port felszabadítása
+
+Lando-val tudunk akármennyi és akármilyen URL-t rendelni a szerverekhez, de szigorúan csak a 80 és 443-as porton. Lando-t használva minden kérés egy proxy-n megy át, ami ezt a két portot figyeli. Tehát ha pl.
+- konténerben futó Solr localhost:8983-ra hallgat, azt a Lando proxy-ja a gépünkön a solr.drupal1.localhost:80-on teszi elérhetővé.
+- konténerben futó BrowserSync localhost:3000-en hallgat, azt a Lando proxy-ja a gépünkön a bs.drupal1.localhost:80-on teszi elérhetővé stb.
+
+Ennek további előnye, hogy semmi körülmény között nem lesz port ütközés más programokkal és szerverekkel a gépen. Így párhuzamosan futhat:
+- akármennyi BrowserSync egyszerre (mivel azok tudnak futni a bs.drupal1.localhost, bs.drupal2.localhost, stb. címen egymástól függetlenül).
+- több különböző verziójú NodeJS egyszerre, akár párhuzamosan több Lando-alapú oldalból is.
+- párhuzamosan futhat 2 oldal, ami teljesen más PHP/Redis/Solr verziókat használ stb.
+
+*Az esetleges működési hibák elkerülése végett ne futtassunk semmit a gépen a 80-as és a 443-as porton! Ha használnánk Apache-szervert és a vhostokat lokálisan, azt kapcsoljuk ki vagy konfiguráljuk át, hogy pl. a 8080-as porton fussanak!*
+
+Ez nem kötelező, de a kevesebb hibalehetőség végett javasolt. Ugyan a Lando keres másik portot ha a 80-as épp foglalt (8080, 8081 stb.), de nem biztos, hogy a futtatott segédprogramjaink és a kódbázisunk minden része ennyire flexibilisen tudja kezelni a portokat. Későbbi bonyodalmak elkerülése végett döntsük el, hogy natívan telepített szerverekkel akarunk fejleszteni, vagy konténerizálva Lando segítségét használva. Ha nem muszáj, ne keverjük a kettőt!
 
 ### Alap környezet
 
@@ -889,8 +915,8 @@ RUN apt-get update && apt-get install -y -q --no-install-recommends \
     xfonts-75dpi \
     xfonts-base \
     && rm -rf /var/lib/apt/lists/*
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/libj/libjpeg-turbo/libjpeg-turbo8_2.0.6-0ubuntu2_amd64.deb
-RUN dpkg -i libjpeg-turbo8_2.0.6-0ubuntu2_amd64.deb
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/libj/libjpeg-turbo/libjpeg-turbo8_2.0.3-0ubuntu1_amd64.deb
+RUN dpkg -i libjpeg-turbo8_2.0.3-0ubuntu1_amd64.deb
 RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN apt --fix-broken install
