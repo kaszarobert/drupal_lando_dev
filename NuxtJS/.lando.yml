@@ -1,0 +1,29 @@
+name: nuxt1
+
+services:
+  node:
+    type: node:custom
+    scanner: false
+    ports:
+      - 24678:24678
+    overrides:
+      build: ./.lando/node
+      image: my/node:16-nuxt1
+
+proxy:
+  node:
+    - nuxt1.localhost:3000
+
+tooling:
+  pnpm:
+    service: node
+  npm:
+    service: node
+  node:
+    service: node
+  yarn:
+    service: node
+  nuxi:
+    service: node
+  nuxt:
+    service: node
