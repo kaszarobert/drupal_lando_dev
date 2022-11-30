@@ -4,6 +4,9 @@ services:
   node:
     type: node:16
     scanner: false
+    # Comment these extra build lines if you don't need to install more global npm packages.
+    build:
+      - npm install -g npx pnpm
 
 proxy:
   node:
@@ -16,7 +19,9 @@ tooling:
     service: node
   yarn:
     service: node
-  vite:
+  npx:
+    service: node
+  pnpm:
     service: node
 
 # Custom commands for easing the development.
