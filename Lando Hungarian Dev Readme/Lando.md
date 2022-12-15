@@ -1062,8 +1062,28 @@ lando start
 
 Forrás: https://github.com/lando/lando/issues/1264
 
-Figyelem!
-Ezt csak végső esetben használjuk!
+#### Composer nem éri el a packagist.org oldalat IPv6-ról
+
+Ezt kapod a composer require, composer update parancsokra:
+
+```
+curl error 28 while downloading https://repo.packagist.org/packages.json: Failed to connect to repo.packagist.org port 443: Connection timed out), package information was loaded from the local cache and may be out of date
+```
+
+Akkor jelenleg a DNS IPv6-os címet adott a packagist.org domainre neked, és azzal nem működik a composer. A https://github.com/composer/packagist/issues/950#issuecomment-424913225 szerint rá kell erőszakolni, hogy mindenképp IPv4-címről érje el a repot:
+
+```
+sudo nano /etc/hosts
+```
+
+Add hozzá ezt a sort:
+
+```
+142.44.164.255 repo.packagist.org
+```
+
+Majd Ctrl+X, Y.
+
 
 ### Drupal PHPUnit tesztek futtatása
 
