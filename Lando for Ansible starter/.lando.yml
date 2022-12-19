@@ -2,7 +2,7 @@ name: myansible
 
 # Attention!
 # Your VAULT KEY must be plain text in a file at
-# ~/.ssh/.ansiblepass/ansiblepass fájlban!
+# ~/.ssh/.ansiblepass/ansiblepass
 # That will be mounted to the python container.
 services:
   python:
