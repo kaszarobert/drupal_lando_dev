@@ -1,0 +1,66 @@
+name: myansible
+
+# Attention!
+# Your VAULT KEY must be plain text in a file at
+# ~/.ssh/.ansiblepass/ansiblepass fájlban!
+# That will be mounted to the python container.
+services:
+  python:
+    type: python:3.11
+    command: tail -f /dev/null
+    scanner: false
+    overrides:
+      build: ./.lando/ansible
+      image: my/ansible:3.11-myansible
+    volumes:
+      - ~/.ssh/.ansiblepass:/home/.ssh/.ansiblepass/
+
+tooling:
+  python:
+    service: python
+  python3:
+    service: python
+    cmd: python
+  pip:
+    service: python
+
+# The console output doesn't work properly
+# when running Ansible commands through Lando tooling.
+# So until that is fixed, it is not advised to use this approach.
+# Instead, SSH to the container and run Ansible commands that way.
+# See examples at the bottom. 
+#  ansible:
+#    service: python
+#  ansible-config:
+#    service: python
+#  ansible-console:
+#    service: python
+#  ansible-doc:
+#    service: python
+#  ansible-galaxy:
+#    service: python
+#  ansible-inventory:
+#    service: python
+#  ansible-playbook:
+#    service: python
+#  ansible-pull:
+#    service: python
+#  ansible-vault:
+#    service: python
+
+  ruby:
+    service: python
+
+  hosts-gen:
+    service: python
+    cmd:
+      - ruby /app/scripts/genhosts.rb
+
+# Sadly, it is not advised to run ansible commands using Lando toolings.
+# The command output does not work properly that way.
+# Instead SSH into the container and run commands there. For example:
+
+# lando ssh
+# ansible-playbook --vault-id=/home/.ssh/.ansiblepass/ansiblepass -i hosts site.yml -l vm
+
+# ansible-vault edit --vault-id=/home/.ssh/.ansiblepass/ansiblepass host_vars/vm-secrets.yml
