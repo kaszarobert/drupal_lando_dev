@@ -2,53 +2,54 @@
 
 Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A memóriahasználat miatt javasolt egyszerre csak 1 vagy 2 site-ot futtatni.
 
-* [Parancsok áttekintése](#parancsok--ttekint-se)
-* [Landofile írása](#landofile-írása)
-  + [Hová tegyem őket](#hová-tegyem-őket)
-  + [Szükséges port felszabadítása](#szükséges-port-felszabadítása)
-  + [Magyarázat](#magyarázat)
-  + [Alap környezet](#alap-környezet)
-  + [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
-  + [Másik fajta adatbázis-szerver beállítása](#másik-fajta-adatbázis-szerver-beállítása)
-  + [Adatbázis-mentés](#adatbázis-mentés)
-  + [MySQL/MariaDB slow query log bekapcsolása](#mysqlmariadb-slow-query-log-bekapcsolása)
-  + [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
-  + [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
-  + [NodeJS 10 Gulppal hozzáadása](#nodejs-10-gulppal-hozzáadása)
-  + [Apache Solr hozzáadása](#apache-solr-hozzáadása)
-    - [Ha csak most adod hozzá](#ha-csak-most-adod-hozzá)
-    - [Ha már vannak solr core fájlok (amit a + Get config.zip gombbal töltöttél le a Drupalban a Solr Server beállításakor)](#ha-már-vannak-solr-core-fájlok--amit-a---get-configzip-gombbal-töltöttál-le-a-drupalban-a-solr-server-beállításakor-)
-  + [Varnish hozzáadása](#varnish-hozzáadása)
-  + [Redis hozzáadása](#redis-hozzáadása)
-  + [Webpack NodeJS 16 Vue CLI-vel](#webpack-nodejs-16-vue-cli-vel)
-  + [xdebug PHP extension hozzáadása az appserverhez](#xdebug-php-extension-hozzáadása-az-appserverhez)
-    - [1. Alap beállítás](#1-alap-beállítás)
-    - [2. Egyéb phpStorm beállítások Windows esetén](#2-egyéb-phpstorm-beállítások-windows-esetén)
-      * [2.1 Windows-on futtatott phpStorm esetén további szükséges beállítás](#21-windows-on-futtatott-phpstorm-esetén-további-szükséges-beállítás)
-      * [2.2 WSL2 alatt futtatjuk a phpStormot](#22-wsl2-alatt-futtatjuk-a-phpstormot)
-    - [3. phpStorm beállítása debugolásra](#3-phpstorm-beállítása-debugolásra)
-    - [4. Visual Studio Code beállítása debugolásra](#4-visual-studio-code-beállítása-debugolásra)
-    - [5. Használat](#5-használat)
-      * [5.1 Használat phpStormban](#51-használat-phpstormban)
-      * [5.2 Használat Visual Studio Code-ban](#52-használat-visual-studio-code-ban)
-  + [Új PHP extension hozzáadása az appserverhez](#új-php-extension-hozzáadása-az-appserverhez)
-  + [wkhtmltopdf telepítése az appserverbe](#wkhtmltopdf-telepítése-az-appserverbe)
-  + [Portok megnyitása a konténerben futtatott szerverekre](#portok-megnyitása-a-konténerben-futtatott-szerverekre)
-  + [PHP codestyle check hozzáadása](#php-codestyle-check-hozzáadása)
-  + [Lokális szerverek elérése másik gépről vagy mobilról](#lokális-szerverek-elérése-másik-gépről-vagy-mobilról)
-    - [Beállítás](#beállítás)
-    - [Használat](#használat)
-  + [Hibás konténerek újraépítése](#hibás-konténerek-újraépítése)
-  + [Drupal PHPUnit tesztek futtatása](#drupal-phpunit-tesztek-futtatása)
-    - [Beállítás](#beállítás-1)
-    - [Használat](#használat-1)
-  + [Google Cloud SDK Landoval](#google-cloud-sdk-landoval)
-    - [Beállítás](#beállítás-2)
-    - [Használat](#használat-2)
-  + [Amazon Web Services CLI Landoval](#amazon-web-services-cli-landoval)
-    - [Beállítás](#beállítás-3)
-    - [Használat](#használat-3)
-
+- [Lando dev environment](#lando-dev-environment)
+  - [Parancsok áttekintése](#parancsok-áttekintése)
+  - [Landofile írása](#landofile-írása)
+    - [Magyarázat](#magyarázat)
+    - [Hová tegyem őket](#hová-tegyem-őket)
+    - [Szükséges port felszabadítása](#szükséges-port-felszabadítása)
+    - [Alap környezet](#alap-környezet)
+    - [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
+    - [Másik fajta adatbázis-szerver beállítása](#másik-fajta-adatbázis-szerver-beállítása)
+    - [Adatbázis-mentés](#adatbázis-mentés)
+    - [MySQL/MariaDB slow query log bekapcsolása](#mysqlmariadb-slow-query-log-bekapcsolása)
+    - [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
+    - [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
+    - [NodeJS 10 Gulppal hozzáadása](#nodejs-10-gulppal-hozzáadása)
+    - [Apache Solr hozzáadása](#apache-solr-hozzáadása)
+      - [Ha csak most adod hozzá](#ha-csak-most-adod-hozzá)
+      - [Ha már vannak solr core fájlok (amit a + Get config.zip gombbal töltöttél le a Drupalban a Solr Server beállításakor)](#ha-már-vannak-solr-core-fájlok-amit-a--get-configzip-gombbal-töltöttél-le-a-drupalban-a-solr-server-beállításakor)
+    - [Varnish hozzáadása](#varnish-hozzáadása)
+    - [Redis hozzáadása](#redis-hozzáadása)
+    - [Webpack NodeJS 16 Vue CLI-vel](#webpack-nodejs-16-vue-cli-vel)
+    - [xdebug PHP extension hozzáadása az appserverhez](#xdebug-php-extension-hozzáadása-az-appserverhez)
+      - [1. Alap beállítás](#1-alap-beállítás)
+      - [2. Egyéb phpStorm beállítások Windows esetén](#2-egyéb-phpstorm-beállítások-windows-esetén)
+        - [2.1 Windows-on futtatott phpStorm esetén további szükséges beállítás](#21-windows-on-futtatott-phpstorm-esetén-további-szükséges-beállítás)
+        - [2.2 WSL2 alatt futtatjuk a phpStormot](#22-wsl2-alatt-futtatjuk-a-phpstormot)
+      - [3. phpStorm beállítása debugolásra](#3-phpstorm-beállítása-debugolásra)
+      - [4. Visual Studio Code beállítása debugolásra](#4-visual-studio-code-beállítása-debugolásra)
+      - [5. Használat](#5-használat)
+        - [5.1 Használat phpStormban](#51-használat-phpstormban)
+        - [5.2 Használat Visual Studio Code-ban](#52-használat-visual-studio-code-ban)
+    - [Új PHP extension hozzáadása az appserverhez](#új-php-extension-hozzáadása-az-appserverhez)
+    - [wkhtmltopdf telepítése az appserverbe](#wkhtmltopdf-telepítése-az-appserverbe)
+    - [Portok megnyitása a konténerben futtatott szerverekre](#portok-megnyitása-a-konténerben-futtatott-szerverekre)
+    - [PHP codestyle check hozzáadása](#php-codestyle-check-hozzáadása)
+    - [Lokális szerverek elérése másik gépről vagy mobilról](#lokális-szerverek-elérése-másik-gépről-vagy-mobilról)
+      - [Beállítás](#beállítás)
+      - [Használat](#használat)
+    - [Hibás konténerek újraépítése](#hibás-konténerek-újraépítése)
+    - [Drupal PHPUnit tesztek futtatása](#drupal-phpunit-tesztek-futtatása)
+      - [Beállítás](#beállítás-1)
+      - [Használat](#használat-1)
+    - [Google Cloud SDK Landoval](#google-cloud-sdk-landoval)
+      - [Beállítás](#beállítás-2)
+      - [Használat](#használat-2)
+    - [Amazon Web Services CLI Landoval](#amazon-web-services-cli-landoval)
+      - [Beállítás](#beállítás-3)
+      - [Használat](#használat-3)
+  
 ## Parancsok áttekintése
 
 | Név | Parancs |
@@ -684,8 +685,10 @@ Windows alatt ha WSL2-ben futtatjuk a környezetet 2 féle módon lehet debugoln
    Így debugoláshoz elérhetővé kell tenni Windows számára a docker unix socketet, xdebugot át kell állítani a Windows-os IP-címre, valamint minden Windows újraindítás alkalmával a megváltozó Windows-os IP-cím miatt újra kell építeni MINDIG a projektet.
 
 2. WSL2 alatt futtatjuk a phpStormot
-   
-   GWSL vagy VCXSRV XServert kell Windows-ra telepíteni, amivel a Linuxon futó phpStorm ablakát lehet megjeleníteni. Előfordulhat, hogy a gép alvó állapotból ébresztése után eltűnnek az így megnyitott ablakok, illetve a vágólappal is gond lehet néha, de cserébe mindent ugyanúgy kell a phpStormba állítani, mintha Linuxos gépen használnád, így nem kell újraépíteni a projektet minden nap.
+  
+   A Windows Subsystem for Linux 2 alatt nemcsak konzolos alkalmazásokat lehet futtatni, hanem grafikus felülettel rendelkezőket is. Így közel natív sebességet érhetsz el, mindent úgy használhatsz, mintha natív Linuxos gépen csinálnád, és nem kell a debugolás miatt újraépíteni a projektet minden nap. 
+
+   Hátránya az, hogy még új és nem teljesen kiforrott megoldás ez. Előfordul néha, hogy a gép alvó állapotból ébresztése után eltűnnek az így megnyitott ablakok, illetve a vágólappal is gond lehet néha.
 
 A továbbiakban részletezem az egyes módszerek esetén mit kell telepíteni, beállítani. Linuxos gépen ez nem kell, az esetben ugorj a "3. phpStorm beállítása debugolásra" fejezetre.
 
@@ -749,9 +752,13 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
 
 ##### 2.2 WSL2 alatt futtatjuk a phpStormot
 
-1. telepítsük fel Windowsra a GWSL-t: https://opticos.github.io/gwsl/ és indítsuk el! Ha nem akarsz a Windows Store-ból telepíteni, akkor használhatod a vcxsrv programot is https://sourceforge.net/projects/vcxsrv/ Ezek teszik lehetővé, hogy a konzolról indíthass grafikus alkalmazásokat, amik így Linux alatt fognak futni.
+1.  Windows 10 Build 19044+ vagy Windows 11 esetén a telepített WSL2 alapból támogatja a grafikus felületű alkalmazások futtatását. Bővebben: https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps (ez elvileg működik az "Installed driver for vGPU" telepítése nélkül is, úgyhogy azt átugorhatod).
+
+  Ennél régebbi Windows 10 esetén GWSL (https://opticos.github.io/gwsl/) vagy VCXSRV XServert (https://sourceforge.net/projects/vcxsrv/) kell Windows-ra telepíteni, amivel a Linuxon futó phpStorm ablakát lehet megjeleníteni. Továbbá a DISPLAY környezeti változót is át kell állítanod, hogy a GWSL/VCXSRV meg tudja jeleníteni a képet. Erről bővebben: https://techcommunity.microsoft.com/t5/modern-work-app-consult-blog/running-wsl-gui-apps-on-windows-10/ba-p/1493242 
+
 2. telepítsük fel a phpstormot a WSL2-ben (NEM Windows alatt!): https://www.jetbrains.com/help/phpstorm/installation-guide.html#snap
-3. WSL2 konzolból a `phpstorm` parancsot beírva tudjuk elindítani a programot.
+
+3. WSL2 konzolból a `phpstorm` parancsot beírva tudjuk elindítani a programot. Vagy a Start menüben is lehet, hogy el lett helyezve parancsikon rá.
 
 #### 3. phpStorm beállítása debugolásra
 
