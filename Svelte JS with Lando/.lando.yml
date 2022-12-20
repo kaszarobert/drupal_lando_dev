@@ -1,0 +1,40 @@
+name: svelte1
+
+services:
+  node:
+    type: node:16
+    scanner: false
+    # Comment these extra build lines if you don't need to install more global npm packages.
+    build:
+      - npm install -g npx pnpm
+
+proxy:
+  node:
+    - svelte1.localhost
+
+tooling:
+  npm:
+    service: node
+  node:
+    service: node
+  yarn:
+    service: node
+  npx:
+    service: node
+  pnpm:
+    service: node
+
+# Custom commands for easing the development.
+  dev:
+    service: node
+    cmd: npm run lando-dev
+  preview:
+    service: node
+    cmd: npm run lando-preview
+
+# Add this to package.json under "scripts" (without the starting # character):
+# "lando-dev": "vite --host 0.0.0.0 --port 80",
+# "lando-preview": "vite preview --host 0.0.0.0 --port 80",
+#
+# Then, run development server with command "lando dev". For vite preview, use "lando preview".
+# This way you won't disturb others in the project who don't use Lando or Docker.
