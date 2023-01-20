@@ -830,7 +830,7 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
       "type": "php",
       "request": "launch",
       "port": 9003,
-      "log": true,
+      "log": false,
       "pathMappings": {
         "/app/": "${workspaceRoot}/"
       }
@@ -838,6 +838,8 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
   ]
 }
 ```
+
+Javasolt a "log" értékét false-on hagyni, különben a Debug Console minden xdebug hívás paramétert logol, így ha változókat kérünk le Debug Console-ban, akkor az eredmény mellett még 20-50 soros scopesRequest és scopesResponse logolódik be.
 
 #### 5. Használat
 
