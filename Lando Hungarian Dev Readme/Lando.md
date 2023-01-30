@@ -40,6 +40,8 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
       - [Beállítás](#beállítás)
       - [Használat](#használat)
     - [Hibás konténerek újraépítése](#hibás-konténerek-újraépítése)
+    - [Lando frissítési értesítő kikapcsolása](#lando-frissítési-értesítő-kikapcsolása)
+    - [Composer nem éri el a packagist.org oldalat IPv6-ról](#composer-nem-éri-el-a-packagistorg-oldalat-IPv6-ról)
     - [Drupal PHPUnit tesztek futtatása](#drupal-phpunit-tesztek-futtatása)
       - [Beállítás](#beállítás-1)
       - [Használat](#használat-1)
@@ -1070,6 +1072,60 @@ lando start
 ```
 
 Forrás: https://github.com/lando/lando/issues/1264
+
+#### Lando frissítési értesítő kikapcsolása
+
+Ha új stable release van kiadva, akkor minden lando-val kiadott parancs a konzolon ezzel a bazi nagy üzenettel íródik ki pluszban:
+
+```
+pc@pc:~/lando-projects/drupal1.localhost(master)$ lando drush cim -y
+
+  __  __        __     __        ___            _ __     __   __    ______
+ / / / /__  ___/ /__ _/ /____   / _ |_  _____ _(_) /__ _/ /  / /__ / / / /
+/ /_/ / _ \/ _  / _ `/ __/ -_) / __ | |/ / _ `/ / / _ `/ _ \/ / -_)_/_/_/ 
+\____/ .__/\_,_/\_,_/\__/\__/ /_/ |_|___/\_,_/_/_/\_,_/_.__/_/\__(_|_|_)  
+    /_/                                                                   
+
+Updating helps us provide the best support and saves us tons of time
+
+Use the link below to get the latest and greatest
+https://github.com/lando/lando/releases/tag/v3.6.4
+
+Lando is FREE and OPEN SOURCE software that relies on contributions from developers like you!
+If you like Lando then help us spend more time making, updating and supporting it by contributing at the link below
+https://github.com/sponsors/lando
+
+If you would like to customize the behavior of this message then check out:
+https://docs.lando.dev/config/releases.html
+
+ [notice] There are no changes to import.
+```
+
+
+Ezt ki lehet kapcsolni így:
+
+```
+lando --channel none
+```
+
+Ha ezt kapod válasznak, akkor sikerült:
+
+```
+You will no longer receive update notifications.
+  _      _____   ___  _  _______  _______
+ | | /| / / _ | / _ \/ |/ /  _/ |/ / ___/
+ | |/ |/ / __ |/ , _/    // //    / (_ / 
+ |__/|__/_/ |_/_/|_/_/|_/___/_/|_/\___/  
+                                         
+If you do not continue to update manually this may limit our ability to support you!
+```
+
+Forrás:
+
+https://github.com/lando/lando/issues/1000#issuecomment-1108267573
+
+https://docs.lando.dev/core/v3/releases.html#:~:text=like%20on%20GitHub.-,You,-can%20also%20choose
+
 
 #### Composer nem éri el a packagist.org oldalat IPv6-ról
 
