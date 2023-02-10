@@ -1,0 +1,40 @@
+name: dotnet
+
+services:
+  app:
+    type: compose
+    app_mount: delegated
+    scanner: false
+    services:
+      image: mcr.microsoft.com/dotnet/sdk:7.0
+      command: tail -f /dev/null
+
+tooling:
+  dotnet:
+    service: app
+
+# Build.
+  b:
+    service: app
+    cmd:
+      - 'dotnet publish -c Release'    
+
+# Build with debug.
+  d:
+    service: app
+    cmd:
+      - 'dotnet publish -c Debug'    
+	  
+# Run
+  r:
+    service: app
+    cmd:
+      - '/app/bin/Release/net7.0/publish/app'
+
+# TODO: this way it doesn't provide any parameters to the app you run.
+# Use this command instead:
+# lando b && lando r <param1> <param2> ...
+  br:
+    service: app
+    cmd:
+      - 'dotnet publish -c Release && /app/bin/Release/net7.0/publish/app'
