@@ -326,7 +326,7 @@ A `services:` alá ez kerüljön: (A solr core neve itt `drupal9`)
 
 ```
   solr:
-    type: solr:8.11.0
+    type: solr:8.6.0
     core: drupal9
     portforward: true
 
@@ -351,7 +351,7 @@ A `services:` alá ez kerüljön: (A solr core neve itt `drupal9`, és a core co
 
 ```
   solr:
-    type: solr:8.11.0
+    type: solr:8.6.0
     core: drupal9
     portforward: true
     config:
