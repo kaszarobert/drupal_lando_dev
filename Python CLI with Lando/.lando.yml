@@ -2,7 +2,7 @@ name: python1
 
 services:
   python:
-    type: python:3
+    type: python:3.8
     command: tail -f /dev/null
 
 tooling:

@@ -1,0 +1,17 @@
+Python3 debug VSCODE+Lando
+
+- lando start
+
+- VSCODE install extensions: 
+  https://marketplace.visualstudio.com/items?itemName=ms-python.python
+  https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+  https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+
+- VSCODE attach to python:3.8 container
+
+- CTRL+SHIFT+P, type in to the search box:
+  python: Select Interpreter:
+
+- set "/usr/local/bin/python" instead of the recommended /usr/bin/python3 or installed global pip packeges won't be found (https://stackoverflow.com/questions/53323647/vscode-python-debug-no-module-named-xx-when-using-module-attribute)
+
+- VSCODE open py script and in the upper right corner select "Debug Python File"
