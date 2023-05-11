@@ -1,0 +1,76 @@
+name: django1.localhost
+
+services:
+  appserver:
+    type: python:3.11
+    command: tail -f /dev/null
+    scanner: false
+    run:
+      - python -m pip install Django
+      - python -m pip install debugpy
+
+proxy:
+  appserver:
+    - django1.localhost
+
+tooling:
+  python:
+    service: appserver
+  django:
+    service: appserver
+    cmd:
+      - python -m django
+  django-admin:
+    service: appserver
+
+# lando django-admin startproject mysite
+# cd mysite
+# lando python manage.py runserver 0.0.0.0:80
+
+# for debugging (attached debugging doesn't break when server reload): (https://stackoverflow.com/a/62944426/11631473)
+#- VSCODE install extensions: 
+#  https://marketplace.visualstudio.com/items?itemName=ms-python.python
+#  https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+#  https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+#
+#- VSCODE attach to python container
+#
+#- add .vscode/launch.json:
+#{
+#    "version": "0.2.0",
+#    "configurations": [
+#      {
+#        "name": "Python: Remote Attach (DebugPy)",
+#        "type": "python",
+#        "request": "attach",
+#        "port": 3000,
+#        "host": "0.0.0.0",
+#      }
+#    ]
+#}
+#
+#- in manage.py add to the top:
+#from django.conf import settings
+#
+#def initialize_debugger():
+#    import debugpy
+#    
+#    # optionally check to see what env you're running in, you probably only want this for 
+#    # local development, for example: if os.getenv("MY_ENV") == "dev":
+#
+#    # RUN_MAIN envvar is set by the reloader to indicate that this is the 
+#    # actual thread running Django. This code is in the parent process and
+#    # initializes the debugger
+#    if not os.getenv("RUN_MAIN") and settings.DEBUG:
+#        debugpy.listen(("0.0.0.0", 3000))
+#        sys.stdout.write("Debugpy started at 0.0.0.0:3000\n")
+#
+#- in manage.py, add:
+#
+#    initialize_debugger()  # add this line
+#    execute_from_command_line(sys.argv)
+#
+#- run server: lando python manage.py runserver 0.0.0.0:80
+#
+#- VSCODE in the upper right corner select "Python: Remote Attach (DebugPy)"
+#
