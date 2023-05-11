@@ -1,0 +1,67 @@
+name: ruby1
+
+services:
+  ruby:
+    type: compose
+    app_mount: delegated
+    scanner: false
+    ports:
+      - 80
+#      - 3000:3000 # We use lando's proxy instead of the default port and host.
+    services:
+      image: ruby:3.2.2-bullseye
+      command: tail -f /dev/null
+    run:
+      - gem install debug
+      - gem install rails
+      - gem install bundler
+
+proxy:
+  ruby:
+    - ruby1.localhost
+
+tooling:
+  ruby:
+    service: ruby
+  irb:
+    service: ruby
+  rails:
+    service: ruby
+  bundle:
+    service: ruby
+  rake:
+    service: ruby
+
+# lando rails new hello_app --skip-bundle
+# cd hello_app/
+# lando bundle install
+# lando rails server -b 0.0.0.0 -p 80
+
+# To debug rails app:
+# 1. go to project folder
+# 2. vscode install https://marketplace.visualstudio.com/items?itemName=KoichiSasada.vscode-rdbg
+# 3. create .vscode/launch.json with this:
+# {
+#     "version": "0.2.0",
+#     "configurations": [
+#             {
+#                 "type": "rdbg",
+#                 "name": "Debug current file with rdbg",
+#                 "request": "launch",
+#                 "script": "${file}",
+#                 "args": [],
+#                 "askParameters": true
+#             },
+#             {
+#                 "type": "rdbg",
+#                 "name": "Attach with rdbg",
+#                 "request": "attach",
+#                 "debugPort": "localhost:12345"
+#              }
+#     ]
+# }    
+# 4. config/environments/development.rb enable Docker IPs (https://stackoverflow.com/a/46105295/11631473)
+#    config.web_console.whitelisted_ips = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
+# 5. lando bundle exec rdbg --open -n -c --port=12345 -- bundle exec rails server -b 0.0.0.0 -p 80
+# 6. open the container in VSCODE, and /app folder and enable rdbg extension
+# 7. Run and Debug > Attach with rdbg
