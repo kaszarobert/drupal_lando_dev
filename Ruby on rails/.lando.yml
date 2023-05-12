@@ -25,6 +25,8 @@ tooling:
     service: ruby
   irb:
     service: ruby
+  gem:
+    service: ruby
   rails:
     service: ruby
   bundle:
