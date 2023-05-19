@@ -654,6 +654,7 @@ A főmappában hozzunk létre egy `.lando` mappát és abban hozzunk létre egy 
 ; Xdebug settings required for PhpStorm.
 ; https://github.com/lando/lando/issues/1668#issuecomment-772829423
 xdebug.start_with_request = yes
+xdebug.log_level=0
 ```
 
 A főmappában hozzunk létre egy `.lando` mappát és abban hozzunk létre egy `xdebug.sh` nevű fájlt az xdebug beállításokkal:
@@ -673,6 +674,25 @@ else
   echo "Xdebug is loaded in "$mode" mode."
 fi
 ```
+
+Abban az esetben, ha a .lando.yml-ben Nginx-re lett lecserélve az appserver (ha találsz a config: alatt olyat, hogy `via: nginx`), akkor ez az `xdebug.sh` nevű fájl tartalma ez legyen:
+
+```
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Xdebug has been turned off, please use the following syntax: 'lando xdebug <mode>'."
+  echo "Valid modes: https://xdebug.org/docs/all_settings#mode."
+  echo xdebug.mode = off > /usr/local/etc/php/conf.d/zzz-lando-xdebug.ini
+  pkill -o -USR2 php-fpm
+else
+  mode="$1"
+  echo xdebug.mode = "$mode" > /usr/local/etc/php/conf.d/zzz-lando-xdebug.ini
+  pkill -o -USR2 php-fpm
+  echo "Xdebug is loaded in "$mode" mode."
+fi
+```
+
 
 Ebben a fájlban a sorvégződések LF-ek legyenek, ne pedig CRLF (Windows) vagy CR (Mac), különben a debugolás bekapcsolása `OCI runtime exec failed: exec failed: container_linux.go:380 : starting container process caused: no such file or directory: unknown` hibát fog dobni.
 
@@ -889,6 +909,17 @@ RUN apt-get update -y \
 
 ```
 
+Ha Nginx-et használsz a projektben, akkor a PHP-FPM-es image-t kell megadni az első sorban:
+
+```
+FROM devwithlando/8.1-fpm-4
+
+RUN apt-get update -y \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb
+
+```
+
 PHP extension telepítésére és bekapcsolására a hivatalos php docker image-ben megvalósított segédparancsok használhatóak:
 - Ha sima PHP-extensiont telepítünk, pl. jsmin esetén, akkor: `docker-php-ext-install jsmin && docker-php-ext-enable jsmin` (van még a `docker-php-ext-configure`, ha az extension valamely beállítását kívánjuk módosítani)
 - Ha PECL-ből letölthető extensiont telepítünk, akkor a fent is látható példa szerint `pecl`-el telepíteni kell, majd `docker-php-ext-enable` paranccsal engedélyezni.
@@ -1055,6 +1086,8 @@ Alapból a drupal9 recipe Apache-ot használ az egyszerűség végett. Ez átkap
 
 - Ha a proxy: alatt van bejegyzés az appserver-hez, azt módosítsuk `appserver_nginx`-re.
 
+- Ne felejtsd el, hogyha saját Docker image-et használsz az appservernek, annak Dockerfile-jában a PHP-FPM-es image-ból indulj ki. Lásd: [Új PHP extension hozzáadása az appserverhez](#új-php-extension-hozzáadása-az-appserverhez)
+
   Tehát így kellene kinéznie pl.
 
 ```
@@ -1081,6 +1114,8 @@ proxy:
 - Hozzuk létre a `.lando/default.conf` fájlt! Annak tartalma legyen alapból az, amit a Drupalos Nginx beállításra használ a Lando. Ezt kiderítheted a Lando Drupal recipe github repojából: https://github.com/lando/drupal/blob/main/recipes/drupal9/default.conf.tpl
 
 - Ehhez a fájlhoz kell adni az átirányításokat alulra, még a server { } blokkon belülre!
+
+- Ne felejtsd el, hogy Nginx-re váltva másképp kell az xdebugot ki- és bekapcsolni, tehát a `.lando/xdebug.sh` fájlt [xdebug PHP extension hozzáadása az appserverhez](#xdebug-php-extension-hozzáadása-az-appserverhez) szerint kell megadni.
 
 - Ha megvan, újra kell buildelned a Lando projekteket: `lando rebuild -y`
 
