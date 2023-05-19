@@ -167,6 +167,7 @@ A `config:` alatt váltható PHP-verzió. Pl.:
   php: '7.4'
   php: '8.0'
   php: '8.1'
+  php: '8.2'
 ```
 
 A `config:` alá ez kerüljön: (igen, az eddigi `config:` alatt lesz még egy `config:`, ez nem elírás)
@@ -810,7 +811,7 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
    
      4) Server: legyen az 1. pontban létrehozott Docker.
    
-     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4" ha az alapértelmezett van használva a `.lando.yml` fájlban. Ezért mindenképpen ellenőrizzük le a `.lando.yml` fájlban, hogy nem-e használ az oldal saját image-et, mert akkor azt kell itt megadni!
+     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4" ha az alapértelmezett van használva a `.lando.yml` fájlban (ha Nginx van használva, akkor ez "devwithlando/php:7.4-fpm-4"). Ezért mindenképpen ellenőrizzük le a `.lando.yml` fájlban, hogy nem-e használ az oldal saját image-et, mert akkor azt kell itt megadni!
    
      6) Mentsük el OK-val mindent.
 
@@ -912,7 +913,7 @@ RUN apt-get update -y \
 Ha Nginx-et használsz a projektben, akkor a PHP-FPM-es image-t kell megadni az első sorban:
 
 ```
-FROM devwithlando/8.1-fpm-4
+FROM devwithlando/7.4-fpm-4
 
 RUN apt-get update -y \
     && pecl install mongodb \
@@ -964,6 +965,7 @@ RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkh
 RUN dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN apt --fix-broken install
 ```
+Ne felejtsd el, hogyha Nginx-et használ a projekt, akkor az első sorban a PHP-FPM-es image-et kell használnod: `FROM devwithlando/php:7.4-fpm-4`
 
 A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hívni a wkhtmltopdf-et)
 
@@ -1011,7 +1013,7 @@ lando phpcs /app/web/modules/contrib/admin_toolbar
 ```
 
 PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibákat, hogy ne kelljen mindig a konzolt futtatni újra és újra:
-- PHP CLI Interpreter legyen a docker konténerben lévő PHP-re beállítva (valami hasonló ehhez a nevűhöz: devwithlando/php:7.4-apache-4, vigyázz a PHP-verziókra, hogy biztos jót válassz ki. Ha saját, Dockerfile-al buildelt szervert használ az oldal, akkor azt kell itt megadni)
+- PHP CLI Interpreter legyen a docker konténerben lévő PHP-re beállítva (valami hasonló ehhez a nevűhöz: devwithlando/php:7.4-apache-4, avagy Nginx használata esetén devwithlando/php:7.4-fpm-4, vigyázz a PHP-verziókra, hogy biztos jót válassz ki. Ha saját, Dockerfile-al buildelt szervert használ az oldal, akkor azt kell itt megadni)
 - Languages & Frameworks > PHP > Quality Tools oldalon kattints a Configuration sornál a ... gombra:
   - bal oldalt a + gombbal add hozzá a ugyanazt a dockeres PHP CLI Interpretert, mint előbb.
   - PHP_CondeSniffer path: `/opt/project/vendor/bin/phpcs` (ne a Local, hanem a dockeres interpreterhez állítsd az útvonalat, ezt )
