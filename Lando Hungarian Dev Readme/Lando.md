@@ -39,6 +39,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
     - [Lokális szerverek elérése másik gépről vagy mobilról](#lokális-szerverek-elérése-másik-gépről-vagy-mobilról)
       - [Beállítás](#beállítás)
       - [Használat](#használat)
+    - [Nginx átirányítások](#nginx-átirányítások)
     - [Hibás konténerek újraépítése](#hibás-konténerek-újraépítése)
     - [Lando frissítési értesítő kikapcsolása](#lando-frissítési-értesítő-kikapcsolása)
     - [Composer nem éri el a packagist.org oldalat IPv6-ról](#composer-nem-éri-el-a-packagistorg-oldalat-IPv6-ról)
@@ -1043,6 +1044,45 @@ Ez megmondja, melyik portról érhető el az oldal. Pl. a HTTP verzió a 49159-e
 ```
 http://192.168.1.4:49159
 ```
+
+### Nginx átirányítások
+
+Alapból a drupal9 recipe Apache-ot használ az egyszerűség végett. Ez átkapcsolható PHP-FPM+Ngix-re:
+
+- A .lando.yml-ben felül a config: alatt adjuk hozzá, hogy `via: nginx`
+
+- A config:config alatt, hogy milyen nginx host konfigurációt használunk: `vhosts: .lando/default.conf`
+
+- Ha a proxy: alatt van bejegyzés az appserver-hez, azt módosítsuk `appserver_nginx`-re.
+
+  Tehát így kellene kinéznie pl.
+
+```
+name: drupal1
+recipe: drupal9
+config:
+  webroot: web
+  php: '8.1'
+  via: nginx
+  database: mariadb:10.3
+  composer_version: '2.4.2'
+  xdebug: off
+  config:
+    php: .lando/php.ini
+    database: .lando/my_custom.cnf
+    vhosts: .lando/default.conf
+
+proxy:
+  appserver_nginx:
+    - drupal1.localhost
+
+```
+
+- Hozzuk létre a `.lando/default.conf` fájlt! Annak tartalma legyen alapból az, amit a Drupalos Nginx beállításra használ a Lando. Ezt kiderítheted a Lando Drupal recipe github repojából: https://github.com/lando/drupal/blob/main/recipes/drupal9/default.conf.tpl
+
+- Ehhez a fájlhoz kell adni az átirányításokat alulra, még a server { } blokkon belülre!
+
+- Ha megvan, újra kell buildelned a Lando projekteket: `lando rebuild -y`
 
 
 ### Hibás konténerek újraépítése
