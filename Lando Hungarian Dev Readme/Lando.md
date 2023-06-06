@@ -514,6 +514,15 @@ A `services:` alá ez kerüljön:
     type: redis:5.0.7
     persist: false
     portforward: false
+    config:
+      server: .lando/redis.conf
+```
+
+Hozzunk létre `.lando/redis.conf` fájlt: (alapból a Redis minden elérhető memóriát felhasznál, ezt limitáljuk pl. 1 GB-ra)
+
+```
+maxmemory 1GB
+maxmemory-policy volatile-lfu
 ```
 
 A drupal site `settings.php`-jába ez kerüljön: (plusz be kell kapcsolni a `redis` modult)
