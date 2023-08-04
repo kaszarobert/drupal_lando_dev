@@ -34,6 +34,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
         - [5.2 Használat Visual Studio Code-ban](#52-használat-visual-studio-code-ban)
     - [Új PHP extension hozzáadása az appserverhez](#új-php-extension-hozzáadása-az-appserverhez)
     - [wkhtmltopdf telepítése az appserverbe](#wkhtmltopdf-telepítése-az-appserverbe)
+    - [Headless Chrome telepítése az appserverbe](#headless-chrome-telepítése-az-appserverbe)
     - [Portok megnyitása a konténerben futtatott szerverekre](#portok-megnyitása-a-konténerben-futtatott-szerverekre)
     - [PHP codestyle check hozzáadása](#php-codestyle-check-hozzáadása)
     - [Lokális szerverek elérése másik gépről vagy mobilról](#lokális-szerverek-elérése-másik-gépről-vagy-mobilról)
@@ -981,6 +982,33 @@ A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hív
 ```
   wkhtmltopdf:
     service: appserver
+```
+
+### Headless Chrome telepítése az appserverbe
+
+Ehhez saját image-et kell buildelni az appservernek. Hasonlóan kell eljárni, mint az egyéni PHP extension telepítéskor, a Dockerfile-ba pedig ilyesminek kell lennie:
+
+```
+FROM devwithlando/php:8.1-apache-4
+
+# Headless Chrome-nak kell a sockets PHP extension.
+RUN docker-php-ext-install sockets
+
+# Headless Chrome telepítése.
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+RUN apt-get update && apt-get install google-chrome-stable -y && apt --fix-broken install
+
+```
+Ne felejtsd el, hogyha Nginx-et használ a projekt, akkor az első sorban a PHP-FPM-es image-et kell használnod: `FROM devwithlando/php:8.1-fpm-4`
+
+A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hívni a wkhtmltopdf-et)
+
+```
+  google-chrome:
+    service: appserver
+    cmd:
+      - appserver: /usr/bin/google-chrome --disable-gpu --headless=old --no-sandbox --disable-dev-shm-usage --mute-audio --disable-extensions
 ```
 
 
