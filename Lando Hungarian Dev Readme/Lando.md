@@ -1097,6 +1097,11 @@ hostname -I | cut -d' ' -f1
 
 Ez adja meg az IP címet, pl. 192.168.1.4
 
+Ha LAN-on másik számítógépről akarsz kapcsolódni, akkor az IP-nek 192.168.0.0 – 192.168.255.255 közt kell lennie. Ha az így kapott IP nem innen van, akkor próbáld meg ezzel: `ip route get 1.1.1.1 | grep -o "src 192\.168\.[0-9]\+\.[0-9]\+"`  (https://www.baeldung.com/linux/find-primary-ip-address#1-the-primary-network-interface)
+
+Ha így se kapsz megfelelő IP-t, akkor `ip addr show` kilistázza minden hálózati adaptert és docker networköt és itt megkeresheted, mi is a LAN IP-d.
+
+
 ```
 lando info
 ```
