@@ -835,7 +835,7 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
 
    - Nyomjuk meg a + gombot!
 
-   - Name: virtual host neve, pl. drupal1.localhost
+   - Name: virtual host neve, pl. drupal1.localhost (ha több ilyen hostot is definiálva van proxy > appserver kulcs alatt a .lando.yml-ben, akkor mindegyikre külön ilyet létre kell hozni)
 
    - Host: ugyanaz
 
@@ -846,6 +846,8 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
    - Pipáljuk be a "Use path mappings" opciót!
 
    - A megjelenő 2 oszlopos táblázatban a projekt főmappájához (ahol a `.lando.yml` van) írjuk be jobb oldali oszlopba (Absolute path on server) azt, hogy `/app`
+
+   - Ez így lehetővé teszi a böngészőben betöltött oldalak debugolását. Hozzunk létre még egy ugyanilyet csak drupal1.localhost helyett `appserver` name és hosttal! Ez lehetővé teszi a CLI commandok debugolását.
 
 5. Kattintsunk a kék OK-ra a mentéshez!
 
