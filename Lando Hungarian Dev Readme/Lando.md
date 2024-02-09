@@ -14,6 +14,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
     - [Adatbázis-mentés](#adatbázis-mentés)
     - [MySQL/MariaDB slow query log bekapcsolása](#mysqlmariadb-slow-query-log-bekapcsolása)
     - [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
+    - [MailPit hozzáadása](#mailpit-hozzáadása)
     - [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
     - [NodeJS 10 Gulppal hozzáadása](#nodejs-10-gulppal-hozzáadása)
     - [Apache Solr hozzáadása](#apache-solr-hozzáadása)
@@ -268,7 +269,68 @@ A `proxy:` alá ez kerüljön:
     - pma.drupal1.localhost
 ```
 
+### MailPit hozzáadása
+
+Localhoston SMTP e-mail küldő szervert helyettesít. Megnézheted, milyen leveleket küldene ki a szerver anélkül, hogy valódi e-mail küldés történne. A helyettesítő szerver a smtp://mailpit:1025 címen lesz, az ezzel "küldött" e-maileket a http://mail.OLDALNEV.localhost oldalon listázza ki.
+
+Ez nem helyettesít alapból, ha a PHP-s sendmaillel történik az e-mail küldés az oldalon.
+
+A `services:` alá ez kerüljön:
+
+```
+  mailpit:
+    scanner: false
+    type: compose
+    services:
+      image: axllent/mailpit
+      volumes:
+        - mailpit:/data
+      ports:
+        - 8025 # Web UI.
+        - 1025 # SMTP.
+      environment:
+        MP_MAX_MESSAGES: 5000
+        MP_DATA_FILE: /data/mailpit.db
+        MP_SMTP_AUTH_ACCEPT_ANY: 1
+        MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      command: '/mailpit'
+    volumes:
+      mailpit:
+
+```
+
+A `proxy:` alá ez kerüljön:
+
+```
+  mailpit:
+    - mail.drupal1.localhost:8025
+```
+
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
+
+Drupal Symfony Mailert így tudjuk rákötni a settings.php-ben (ez igazából a felületen is beállítható, csak):
+
+**Fontos, hogy a Symfony Mailer felületén a /admin/config/system/mailer/transport oldalon adjunk hozzá egy SMTP transportot előbb, aminek az ID-je a configban "smtp" legyen!**
+
+```
+$config['symfony_mailer.settings']['default_transport'] = 'smtp';
+$config['symfony_mailer.mailer_transport.smtp']['status'] = TRUE;
+$config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = 'mailpit';
+$config['symfony_mailer.mailer_transport.smtp']['configuration']['port'] = 1025;
+```
+
+Drupal Swiftmailer modult így tudjuk rákötni a setting.php-ben:
+
+```
+$config['swiftmailer.transport']['transport'] = 'smtp';
+$config['swiftmailer.transport']['smtp_host'] = 'mailpit';
+$config['swiftmailer.transport']['smtp_port'] = '1025';
+$config['swiftmailer.transport']['smtp_encryption'] = '0';
+```
+
+Ezután cache ürítés és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
+
+Megj. a MailHog ugyan elterjedtebb hasonló megoldás erre, ám 2020 óta nincs támogatva, ezért nem javasolt többé a használata, lásd a fejlesztő bejelentését: https://github.com/mailhog/MailHog/issues/442#issuecomment-1493415258 Helyette ezt a MailPit megoldást javasolják
 
 ### Drush útvonalának manuális megadása
 
