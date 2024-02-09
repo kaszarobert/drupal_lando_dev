@@ -280,7 +280,8 @@ A `services:` alá ez kerüljön:
 ```
   mailpit:
     scanner: false
-    type: compose
+    api: 3
+    type: lando
     services:
       image: axllent/mailpit
       volumes:
@@ -1353,7 +1354,8 @@ Szerk.: https://www.drupal.org/project/drupalci_environments/issues/3208793#comm
         BROWSERTEST_OUTPUT_DIRECTORY: '/app/web/sites/simpletest/browser_output'
         MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chrome:9515"]'
   chrome:
-    type: compose
+    api: 3
+    type: lando
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --allowed-origins=* --whitelisted-ips=
@@ -1512,7 +1514,8 @@ A `services:` alá ez kerüljön:
 
 ```
   cloud-sdk:
-    type: compose
+    api: 3
+    type: lando
     app_mount: delegated
     services:
       image: google/cloud-sdk:389.0.0
@@ -1569,7 +1572,8 @@ A `services:` illesszük be ezt:
 ```
   aws:
     scanner: false
-    type: compose
+    api: 3
+    type: lando
     app_mount: delegated
     services:
       user: root
