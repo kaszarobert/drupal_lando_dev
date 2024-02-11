@@ -309,7 +309,7 @@ A `proxy:` alá ez kerüljön:
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
-Drupal Symfony Mailert így tudjuk rákötni a settings.php-ben (ez igazából a felületen is beállítható, csak):
+Drupal Symfony Mailert így tudjuk rákötni a settings.php-ben (ez igazából a felületen is beállítható, csak felületen az éles hozzáférést javasolt becommitolni, amit localhoston felülírsz a settings.php-vel):
 
 **Fontos, hogy a Symfony Mailer felületén a /admin/config/system/mailer/transport oldalon adjunk hozzá egy SMTP transportot előbb, aminek az ID-je a configban "smtp" legyen!**
 
@@ -320,7 +320,7 @@ $config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = 'mail
 $config['symfony_mailer.mailer_transport.smtp']['configuration']['port'] = 1025;
 ```
 
-Drupal Swiftmailer modult így tudjuk rákötni a setting.php-ben:
+Drupal Swiftmailer modult így tudjuk rákötni a settings.php-ben:
 
 ```
 $config['swiftmailer.transport']['transport'] = 'smtp';
@@ -1048,6 +1048,9 @@ A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hív
   wkhtmltopdf:
     service: appserver
 ```
+
+Megj. a wkhtmltopdf (https://github.com/wkhtmltopdf/wkhtmltopdf) 2020 júniusa óta nincs fejlesztve, 2023-ban a repo archivált állapotú lett. A tudása is kb. 2016-os WebKit-alapú böngészővel egyezik meg, ezért manapság már inkább Headless Chrome használata javasolt.
+
 
 ### Headless Chrome telepítése az appserverbe
 
