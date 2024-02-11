@@ -1049,7 +1049,7 @@ A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hív
     service: appserver
 ```
 
-Megj. a wkhtmltopdf (https://github.com/wkhtmltopdf/wkhtmltopdf) 2020 júniusa óta nincs fejlesztve, 2023-ban a repo archivált állapotú lett. A tudása is kb. 2016-os WebKit-alapú böngészővel egyezik meg, ezért manapság már inkább Headless Chrome használata javasolt.
+Megj. a wkhtmltopdf (https://github.com/wkhtmltopdf/wkhtmltopdf) 2020 óta nincs fejlesztve, 2023-ban a repo archivált állapotú lett. A tudása is kb. 2012 körüli WebKit-alapú böngészővel egyezik meg, ezért manapság már inkább Headless Chrome használata javasolt.
 
 
 ### Headless Chrome telepítése az appserverbe
