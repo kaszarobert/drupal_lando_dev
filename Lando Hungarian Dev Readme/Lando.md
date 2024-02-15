@@ -344,7 +344,7 @@ $config['swiftmailer.transport']['smtp_encryption'] = '0';
 
 Ezután cache ürítés és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
 
-#### c) Ha natív PHP sendmailt használ az oldal
+#### Ha natív PHP sendmailt használ az oldal
 
 Ebben az esetben a sendmail binárist fogjuk helyettesíteni úgy, hogy az appserver image-be is letöltünk egy mailpit binárist, ami továbbítja a leveleket a MailPit szerverünknek SMTP-vel.
 
