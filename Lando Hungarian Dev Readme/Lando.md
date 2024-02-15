@@ -271,9 +271,11 @@ A `proxy:` alá ez kerüljön:
 
 ### MailPit hozzáadása
 
-Localhoston SMTP e-mail küldő szervert helyettesít. Megnézheted, milyen leveleket küldene ki a szerver anélkül, hogy valódi e-mail küldés történne. A helyettesítő szerver a smtp://mailpit:1025 címen lesz, az ezzel "küldött" e-maileket a http://mail.OLDALNEV.localhost oldalon listázza ki.
+Localhoston e-mail küldő szervert helyettesít. Megnézheted, milyen leveleket küldene ki a szerver anélkül, hogy valódi e-mail küldés történne.
 
-Ez nem helyettesít alapból, ha a PHP-s sendmaillel történik az e-mail küldés az oldalon.
+Megj. a MailHog ugyan elterjedtebb hasonló megoldás erre, ám 2020 óta nincs támogatva, egyes HTML maileket nem jelenít meg HTML formájában, ezért nem javasolt többé a használata, lásd a fejlesztő bejelentését: https://github.com/mailhog/MailHog/issues/442#issuecomment-1493415258 Helyette ezt a MailPit megoldást javasolják.
+
+A helyettesítő szerver az `smtp://OLDALNEV_mailpit_1:1025` címen lesz (avagy ha úgy nem menne, akkor próbáld az `smtp://mailpit:1025` címen), ahol `OLDALNEV` a `name` elem a `.lando.yml`-ből. Az ezzel "küldött" e-maileket a http://mail.OLDALNEV.localhost oldalon listázza ki.
 
 A `services:` alá ez kerüljön:
 
@@ -283,7 +285,7 @@ A `services:` alá ez kerüljön:
     api: 3
     type: lando
     services:
-      image: axllent/mailpit
+      image: axllent/mailpit:v1.13.3
       volumes:
         - mailpit:/data
       ports:
@@ -304,34 +306,70 @@ A `proxy:` alá ez kerüljön:
 
 ```
   mailpit:
-    - mail.drupal1.localhost:8025
+    - mail.OLDALNEV.localhost:8025
 ```
+
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
-Drupal Symfony Mailert így tudjuk rákötni a settings.php-ben (ez igazából a felületen is beállítható, csak felületen az éles hozzáférést javasolt becommitolni, amit localhoston felülírsz a settings.php-vel):
+Majd attól függően, az oldalon milyen e-mail küldés van megvalósítva, másképp kell beállítani a Drupalt.
+
+#### Ha SMTP-t használ az oldal
+
+##### a) Symfony Mailer
+
+A fent leírtak után a Drupal Symfony Mailert így tudjuk rákötni a settings.php-ben (ez igazából a felületen is beállítható, csak felületen az éles hozzáférést javasolt becommitolni, amit localhoston felülírsz a settings.php-vel):
 
 **Fontos, hogy a Symfony Mailer felületén a /admin/config/system/mailer/transport oldalon adjunk hozzá egy SMTP transportot előbb, aminek az ID-je a configban "smtp" legyen!**
 
 ```
 $config['symfony_mailer.settings']['default_transport'] = 'smtp';
 $config['symfony_mailer.mailer_transport.smtp']['status'] = TRUE;
-$config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = 'mailpit';
+$config['symfony_mailer.mailer_transport.smtp']['configuration']['host'] = 'OLDALNEV_mailpit_1';
 $config['symfony_mailer.mailer_transport.smtp']['configuration']['port'] = 1025;
 ```
+
+Ezután cache ürítés és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
+
+##### b) Swiftmailer
 
 Drupal Swiftmailer modult így tudjuk rákötni a settings.php-ben:
 
 ```
 $config['swiftmailer.transport']['transport'] = 'smtp';
-$config['swiftmailer.transport']['smtp_host'] = 'mailpit';
+$config['swiftmailer.transport']['smtp_host'] = 'OLDALNEV_mailpit_1';
 $config['swiftmailer.transport']['smtp_port'] = '1025';
 $config['swiftmailer.transport']['smtp_encryption'] = '0';
 ```
 
 Ezután cache ürítés és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
 
-Megj. a MailHog ugyan elterjedtebb hasonló megoldás erre, ám 2020 óta nincs támogatva, ezért nem javasolt többé a használata, lásd a fejlesztő bejelentését: https://github.com/mailhog/MailHog/issues/442#issuecomment-1493415258 Helyette ezt a MailPit megoldást javasolják
+#### c) Ha natív PHP sendmailt használ az oldal
+
+Ebben az esetben a sendmail binárist fogjuk helyettesíteni úgy, hogy az appserver image-be is letöltünk egy mailpit binárist, ami továbbítja a leveleket a MailPit szerverünknek SMTP-vel.
+
+Tehát saját image-et kell buildelni az appservernek. Hasonlóan kell eljárni, mint az egyéni PHP extension telepítéskor, a `Dockerfile`-ba pedig ilyesminek kell lennie:
+
+```
+FROM devwithlando/php:8.1-apache-4
+
+# A sendmail telepítéséhez biztosítani kell, hogy a sendmail service is fut, ráadásul a hosts fájlt is írni kéne,
+# de Mailpit használatához ennél sokkal egyszerűbb, ha csak egy Mailpit binárissal helyettesítjük küldőnek,
+# és php.ini-be beállítjuk, hogy a sendmail helyét ez vegye át, illetve melyik Mailpit szervernek továbbítsa a mailt.
+RUN curl -sL https://raw.githubusercontent.com/axllent/mailpit/develop/install.sh | bash -
+```
+
+A `.lando/php.ini`-be tegyük be ezt a sort:
+
+```
+[mail function]
+sendmail_path = /usr/local/bin/mailpit sendmail -S mailpit:1025 -t -i
+```
+
+Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y` és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
+
+Ebben az esetben a Drupal oldalon nem kell változtatni beállítást, de azt ne felejtsd, hogy a Drupal alapból nem tud HTML e-maileket kiküldeni ilyen módon, azokra kell a Drupal Symfony Mailer modul.
+
 
 ### Drush útvonalának manuális megadása
 
