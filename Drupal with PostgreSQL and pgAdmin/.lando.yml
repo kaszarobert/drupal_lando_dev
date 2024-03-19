@@ -4,21 +4,26 @@ config:
   webroot: web
   php: '8.2'
   database: postgres:15
-  xdebug: true
+  xdebug: off
   composer_version: '2'
   config:
     php: .lando/php.ini
 
 services:
   appserver:
-    scanner: false
     overrides:
-      build: ./.lando/php
-      image: my/php:8.3-drupal2
       environment:
         # Support debugging Drush with XDEBUG.
         PHP_IDE_CONFIG: "serverName=appserver"
         XDEBUG_MODE:
+
+  database:
+    portforward: 5432
+    creds:
+      database: drupalpostgrespgadmin
+      user: postgres
+      # By "NO PASSWORD" we mean the password is blank
+      password: NO PASSWORD
 
   # It could take up to 30 seconds until pgAadmin starts.
   # Until it's loaded, it will give you Bad Gateway, so be patient.
@@ -28,7 +33,7 @@ services:
   # Connect to PostgreSQL
   # host: database
   # port: 5432
-  # database: drupal10
+  # database: drupalpostgrespgadmin
   # user: postgres
   # (there is no password)
   #
@@ -39,7 +44,7 @@ services:
     app_mount: delegated
     scanner: false
     services:
-      image: dpage/pgadmin4:6.21
+      image: dpage/pgadmin4:8.4
       command: "/entrypoint.sh"
       ports:
         - '80'
@@ -52,9 +57,9 @@ services:
 
 proxy:
   appserver:
-    - drupal2.localhost
+    - drupalpostgrespgadmin.localhost
   pgadmin:
-    - pma.drupal2.localhost
+    - pma.drupalpostgrespgadmin.localhost
 
 tooling:
   xdebug:
