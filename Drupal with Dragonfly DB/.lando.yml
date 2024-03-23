@@ -1,0 +1,81 @@
+name: drupaldragonfly
+recipe: drupal10
+config:
+  webroot: web
+  php: '8.2
+  database: mysql:8.0
+  xdebug: off
+  composer_version: '2'
+  config:
+    php: .lando/php.ini
+
+services:
+  appserver:
+    scanner: false
+    overrides:
+      environment:
+        # Support debugging Drush with XDEBUG.
+        PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_MODE:
+
+  database:
+    scanner: false
+    creds:
+      user: drupaldragonfly
+      password: drupaldragonfly
+      database: drupaldragonfly
+
+  phpmyadmin:
+    scanner: false
+    type: phpmyadmin:5.1
+    hosts:
+      - database
+
+  dragonfly:
+    scanner: false
+    api: 3
+    type: lando
+    services:
+      image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.15.1
+      volumes:
+        - dragonflydata:/data
+      ports:
+        - 6379
+      command: 'dragonfly --logtostderr --port=6379 --bind=0.0.0.0 --maxmemory=1G'
+    volumes:
+      dragonflydata:
+
+proxy:
+  appserver:
+    - drupaldragonfly.localhost
+  phpmyadmin:
+    - pma.drupaldragonfly.localhost
+  dragonfly:
+    - dragonfly.drupaldragonfly.localhost:6379
+
+tooling:
+  xdebug:
+    description: Loads Xdebug in the selected mode.
+    cmd:
+      - appserver: /app/.lando/xdebug.sh
+    user: root
+  phpcs:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md"
+    options:
+    description: Run phpcs for given folder or file.
+  phpcbf:
+    service: appserver
+    cmd: "/app/vendor/bin/phpcbf --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md"
+    options:
+    description: Run phpcs for given folder or file.
+
+# Install redis module with composer, then put this to settings.php:
+#$settings['redis.connection']['host'] = 'drupaldragonfly_dragonfly_1';
+#$settings['redis.connection']['port'] = '6379';
+#$settings['redis.connection']['interface'] = 'PhpRedis';
+#$settings['redis.connection']['password'] = NULL;
+#$settings['redis.connection']['base'] = '0';
+#$settings['cache_prefix'] = 'drupal_';
+#$settings['cache']['default'] = 'cache.backend.redis';
+#$settings['container_yamls'][] = 'modules/contrib/redis/example.services.yml';
