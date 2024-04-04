@@ -1444,7 +1444,7 @@ lando composer require --dev wikimedia/composer-merge-plugin
         }
   ```
 
-5. Utána `composer update` (A `--lock` paraméterrel futtatva nem csinálna semmit)
+5. Utána `lando composer update` (A `--lock` paraméterrel futtatva nem csinálna semmit)
 
 6. Utána másold ki a `web/core/phpcs.xml.dist` fájlt a gyökérmappára a .lando.yml mellé!
 
@@ -1471,7 +1471,7 @@ mkdir -p web/sites/simpletest/browser_output
 
 9. Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y`
 
-10. Ha egész modulok tesztjeit is akarod futtatni, akkor azokra ki kell javítani az útvonalakat a phpunit.xml-ben. Meg kell adnod, az XML-fájlhoz képest relatívan hol vannak tesztek. Ez az XML-felépítés Drupal verziónként más lehet, így a következő mintakód csak afféle útmutató, mintsem valódi kimásolandó kód:
+10. (Ez a lépés nem kell már Drupal 10-től, átugorhatod. Ha esetleg nem futnának le contrib modul tesztek, csak akkor vesződj ezzel) Ha egész modulok tesztjeit is akarod futtatni, akkor azokra ki kell javítani az útvonalakat a phpunit.xml-ben. Meg kell adnod, az XML-fájlhoz képest relatívan hol vannak tesztek. Ez az XML-felépítés Drupal verziónként más lehet, így a következő mintakód csak afféle útmutató, mintsem valódi kimásolandó kód:
 
 ```
   <testsuites>
@@ -1525,7 +1525,7 @@ Pl. a 4 fajta tesztre, amit a Drupal tud - ha mind zöld és OK, akkor működik
 ```
 lando test web/core/modules/node/tests/src/Unit/NodeOperationAccessTest.php
 lando test web/core/modules/help/tests/src/Kernel/HelpEmptyPageTest.php
-lando test web/core/modules/color/tests/src/Functional/ColorConfigSchemaTest.php
+lando test web/core/modules/block/tests/src/Functional/BlockHtmlTest.php
 lando test web/core/modules/action/tests/src/FunctionalJavascript/ActionFormAjaxTest.php
 ```
 
