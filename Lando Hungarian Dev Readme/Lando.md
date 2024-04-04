@@ -15,6 +15,10 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
     - [MySQL/MariaDB slow query log bekapcsolása](#mysqlmariadb-slow-query-log-bekapcsolása)
     - [phpMyAdmin hozzáadása](#phpmyadmin-hozzáadása)
     - [MailPit hozzáadása](#mailpit-hozzáadása)
+      - [Ha SMTP-t használ az oldal](#ha-smtp-t-használ-az-oldal)
+        - [a) Symfony Mailer](#a-symfony-mailer)
+        - [b) Swiftmailer](#b-swiftmailer)
+      - [Ha natív PHP sendmailt használ az oldal](#ha-natív-php-sendmailt-használ-az-oldal)
     - [Drush útvonalának manuális megadása](#drush-útvonalának-manuális-megadása)
     - [NodeJS 10 Gulppal hozzáadása](#nodejs-10-gulppal-hozzáadása)
     - [Apache Solr hozzáadása](#apache-solr-hozzáadása)
@@ -43,11 +47,12 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
       - [Használat](#használat)
     - [Nginx átirányítások](#nginx-átirányítások)
     - [Hibás konténerek újraépítése](#hibás-konténerek-újraépítése)
-    - [Lando frissítési értesítő kikapcsolása](#lando-frissítési-értesítő-kikapcsolása)
-    - [Composer nem éri el a packagist.org oldalat IPv6-ról](#composer-nem-éri-el-a-packagistorg-oldalat-IPv6-ról)
+      - [Lando frissítési értesítő kikapcsolása](#lando-frissítési-értesítő-kikapcsolása)
+      - [Composer nem éri el a packagist.org oldalat IPv6-ról](#composer-nem-éri-el-a-packagistorg-oldalat-ipv6-ról)
     - [Drupal PHPUnit tesztek futtatása](#drupal-phpunit-tesztek-futtatása)
       - [Beállítás](#beállítás-1)
-      - [Használat](#használat-1)
+      - [Használat](#használat-1) 
+    - [PHPStan futtatása](#phpstan-futtatása)
     - [Google Cloud SDK Landoval](#google-cloud-sdk-landoval)
       - [Beállítás](#beállítás-2)
       - [Használat](#használat-2)
@@ -1545,6 +1550,31 @@ Vagy úgy is futtathatsz modul tesztet, hogy a modul útvonalát adod meg:
 
 ```
 lando test web/modules/contrib/commerce
+```
+
+### PHPStan futtatása
+
+Ha a Drupalt feltelepítetted már, akkor a vendor mappában már a PHPStan ott lesz. Lando-val így tudod azt használni:
+
+A `tooling:` alá ez kerüljön:
+
+```
+  phpstan:
+    service: appserver
+    cmd: "vendor/bin/phpstan"
+
+```
+
+Használat pl. "content_redirect_to_front" contrib modulon: 
+
+```
+lando phpstan analyze /app/web/modules/contrib/content_redirect_to_front
+```
+
+Ha pedig pl. a modulnak van PHPStan ellenőrzési konfigurációja is:
+
+```
+lando phpstan analyze /app/web/modules/contrib/content_redirect_to_front -c /app/web/modules/contrib/content_redirect_to_front/phpstan.neon
 ```
 
 ### Google Cloud SDK Landoval
