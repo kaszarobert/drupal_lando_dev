@@ -1,0 +1,40 @@
+name: demo
+
+services:
+  appserver:
+    scanner: false
+    api: 3
+    type: lando
+    services:
+      image: maven:3.9.7-eclipse-temurin-22-jammy
+      command: 'tail -f /dev/null'
+      ports: 
+        - 8080
+
+proxy:
+  appserver:
+    - demo.localhost:8080
+
+tooling:
+  java:
+    service: appserver
+  mvn:
+    service: appserver
+  mvnw:
+    service: appserver
+    cmd:
+      - ./mvnw
+
+  compile:
+    service: appserver
+    cmd:
+      - mvn compile
+  build:
+    service: appserver
+    cmd:
+      - mvn package
+  run:
+    service: appserver
+    cmd:
+      - /app/mvnw spring-boot:run --quiet
+#      - java -jar target/demo-0.0.1-SNAPSHOT.jar
