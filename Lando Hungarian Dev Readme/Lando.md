@@ -1423,7 +1423,7 @@ Figyelem! Drupal 10.3 vagy régebbi esetén a `MINK_DRIVER_ARGS_WEBDRIVER` vált
   ```
   testdebug:
     service: appserver
-    cmd: "php /app/vendor/bin/phpunit -testdox -c /app/phpunit.xml"
+    cmd: "php /app/vendor/bin/phpunit --testdox -c /app/phpunit.xml"
   test:
     service: appserver
     cmd: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
