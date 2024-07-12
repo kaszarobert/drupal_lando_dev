@@ -1398,7 +1398,7 @@ Szerk.: https://www.drupal.org/project/drupalci_environments/issues/3208793#comm
         SIMPLETEST_BASE_URL: "http://drupal1.lndo.site"
         SIMPLETEST_DB: "mysql://drupal9:drupal9@database/drupal9"
         BROWSERTEST_OUTPUT_DIRECTORY: '/app/web/sites/simpletest/browser_output'
-        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chrome:9515"]'
+        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","goog:chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chrome:9515"]'
   chrome:
     api: 3
     type: lando
@@ -1415,13 +1415,15 @@ proxy:
     - drupal1.localhost
     - drupal1.lndo.site
   ```
+
+Figyelem! Drupal 10.3 vagy régebbi esetén a `MINK_DRIVER_ARGS_WEBDRIVER` változóban a `goog:chromeOptions` legyen `chromeOptions` (https://www.drupal.org/node/3422624)!
   
 2. A `tooling:` részhez ezt add hozzá:
 
   ```
   testdebug:
     service: appserver
-    cmd: "php /app/vendor/bin/phpunit -v -c /app/phpunit.xml"
+    cmd: "php /app/vendor/bin/phpunit -testdox -c /app/phpunit.xml"
   test:
     service: appserver
     cmd: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
@@ -1430,13 +1432,16 @@ proxy:
     cmd: "/app/vendor/bin/phpunit"
   ```
 
+  Figyelem! Drupal 10 vagy régebbi esetén a testdebug-hoz tartozó cmd sor legyen ez: `cmd: "php /app/vendor/bin/phpunit -v -c /app/phpunit.xml"`
+
 3. Fel kell telepíteni composerrel a tesztelési csomagokat, mert azok alapból nincsenek a drupal composer projektben:
 
   ```
 lando composer require drupal/core-dev --dev --with-all-dependencies
-lando composer require --dev phpspec/prophecy-phpunit
 lando composer require --dev wikimedia/composer-merge-plugin
   ```
+
+  Figyelem! Drupal 10 vagy régebbi esetén még kell ez is: `lando composer require --dev phpspec/prophecy-phpunit`
 
 4. composer.json-ba tedd az "extra" alá ezt: (ezzel biztosítjuk, hogyha egy modul a tesztekhez más modult igényel a másikkal való együttműködés tesztelésére, akkor az is legyen letöltve)
 
@@ -1531,7 +1536,7 @@ Pl. a 4 fajta tesztre, amit a Drupal tud - ha mind zöld és OK, akkor működik
 lando test web/core/modules/node/tests/src/Unit/NodeOperationAccessTest.php
 lando test web/core/modules/help/tests/src/Kernel/HelpEmptyPageTest.php
 lando test web/core/modules/block/tests/src/Functional/BlockHtmlTest.php
-lando test web/core/modules/action/tests/src/FunctionalJavascript/ActionFormAjaxTest.php
+lando test web/core/modules/field/tests/src/FunctionalJavascript/Boolean/BooleanFormatterSettingsTest.php
 ```
 
 Lekérheted, milyen modulokhoz van teszt:
