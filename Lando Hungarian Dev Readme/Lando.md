@@ -1557,6 +1557,12 @@ Vagy úgy is futtathatsz modul tesztet, hogy a modul útvonalát adod meg:
 lando test web/modules/contrib/commerce
 ```
 
+Vagy modul konkrét teszt osztály teszt metódusa:
+
+```
+lando testdebug --filter testPublishInPastWhenItIsDisabled  web/modules/contrib/lightning_scheduler/tests/src/FunctionalJavascript/TransitionTest.php
+```
+
 ### PHPStan futtatása
 
 Ha a Drupalt feltelepítetted már, akkor a vendor mappában már a PHPStan ott lesz. Lando-val így tudod azt használni:
