@@ -1563,6 +1563,46 @@ Vagy modul konkrét teszt osztály teszt metódusa:
 lando testdebug --filter testPublishInPastWhenItIsDisabled  web/modules/contrib/lightning_scheduler/tests/src/FunctionalJavascript/TransitionTest.php
 ```
 
+#### Már feltelepített oldalhoz UI tesztek írása
+
+https://gitlab.com/weitzman/drupal-test-traits alapján.
+
+11. 
+```
+composer require weitzman/drupal-test-traits --dev
+```
+
+12. `.lando.yml`-be még ezek kellenek:
+
+  ```
+  appserver:
+    overrides:
+      environment:
+        # ... az alap teszteléshez szükséges ENV változók maradnak ugyanazok.
+        # DTT testing.
+        DTT_BASE_URL: "http://drupal1.lndo.site"
+        DTT_MINK_DRIVER_ARGS: '["chrome", {"browserName":"chrome","goog:chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chrome:9515"]'
+        DTT_API_OPTIONS: '{"socketTimeout": 360, "domWaitTimeout": 3600000}'
+        SYMFONY_DEPRECATIONS_HELPER: 'disabled'
+  ```
+
+A `tooling:` alá még kerüljön be ez:
+
+```
+  testdtt:
+    service: appserver
+    cmd: "php /app/vendor/bin/phpunit -v -c /app/phpunit_dtt.xml"
+
+```
+
+13. Utána másold ki a DTT-specifikus phpunit.xml fájlt a gyökérmappára a .lando.yml mellé! Vagy az is elég, hogyha a "existing-site" és "existing-site-javascript" testsuite definíciókat átmásolod a korábban szerkesztett phpunit.xml-be!
+
+  ```
+  cp vendor/weitzman/drupal-test-traits/docs/phpunit.xml phpunit_dtt.xml
+  ```
+14. Ezután javasolt egy custom modult létrehozni, és abban a `drush gen test:existing` vagy `drush gen test:existing-js` segédszkripttel létrehozni a kiinduló teszt osztályokat abba a custom modulba. Ne felejtsd el, hogy itt is érvényes a class autoloading miatt, hogy minden teszt osztály a megfelelő útvonalon kell, hogy legyen és a fájlnév mindig `*Test.php` formájú legyen! Tehát pl. `AjaxTest2.php` rossz, `AjaxTest.php` a jó. A tesztek futtatása ugyanúgy történik, mint előbb, csak a `lando testdtd` segédparancsot használd!
+
+
 ### PHPStan futtatása
 
 Ha a Drupalt feltelepítetted már, akkor a vendor mappában már a PHPStan ott lesz. Lando-val így tudod azt használni:
