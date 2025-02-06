@@ -1114,7 +1114,7 @@ RUN apt-get update && apt-get install google-chrome-stable -y && apt --fix-broke
 ```
 Ne felejtsd el, hogyha Nginx-et használ a projekt, akkor az első sorban a PHP-FPM-es image-et kell használnod: `FROM devwithlando/php:8.1-fpm-4`
 
-A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hívni a wkhtmltopdf-et)
+A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hívni a Headless Chrome-ot manuálisan)
 
 ```
   google-chrome:
