@@ -496,6 +496,7 @@ Lehetséges még, hogy a rendszeren ki kell nyitni a portot a tűzfalon. Lásd: 
 
 A Varnish konfigurációs fájlt tegyük egy `.lando` mappában belül `default.vcl` névvel!
 
+Ez sajnos 1 esetben nem működik: ha a Drupal oldalon nyelvenként más domainek vannak beállítva (/admin/config/regional/language/detection/url). Ilyen esetben átmenetileg állítsd át, hogy URL prefixek alapján legyenek a nyelvek, és akkor nem fogja a varnish URL-ről mindig az adott nyelv URL-jére vinni.
 
 Vigyázat!
 Ebben a vcl fájlban ha localhostra van irányítva a Varnish felől a forgalom a webszerverre, akkor azt módosítani kell erre:
