@@ -502,11 +502,11 @@ Ebben a vcl fájlban ha localhostra van irányítva a Varnish felől a forgalom 
 
 ```
 # Default backend definition. Set this to point to your content server.
-backend default {
-    .host = "{{ getenv "VARNISH_BACKEND_HOST" }}";
-    .port = "{{ getenv "VARNISH_BACKEND_PORT" "80" }}";
-    .first_byte_timeout = 300s;
-}
+# backend default {
+#     .host = "127.0.0.1";
+#     .port = "8081";
+#     .first_byte_timeout = 300s;
+# }
 ```
 
 Ha ebben a vcl fájlban korlátozzuk IP-cím szerint, hogy ki küldhet PURGE és BAN kéréseket, akkor itt célszerű azt kikommentelni, mert a konténerek indításakor mindig változó lehet az IP-címe, ezért az itt nem tudjuk lefixálni. Ez azt jelenti, hogy a vcl fájlban minden `acl purge {` és `if (!client.ip ~ purge) {` utasításokat kommenteljük ki úgy, hogy a sor legelejére teszünk egy # karaktert, pl. így:
@@ -554,6 +554,7 @@ A `services:` alá ez kerüljön:
 
 ```
   varnish:
+    scanner: false
     type: varnish:6.0
     backends:
       - appserver
@@ -568,7 +569,6 @@ A `services:` alá ez kerüljön:
         VARNISHD_PARAM_HTTP_RESP_HDR_LEN: 65536
         VARNISHD_PARAM_HTTP_RESP_SIZE: 98304
         VARNISHD_PARAM_WORKSPACE_BACKEND: 131072
-        VARNISHD_VCL_SCRIPT: "/etc/varnish/lando.vcl"
 
 ```
 
