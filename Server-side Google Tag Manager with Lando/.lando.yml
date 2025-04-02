@@ -1,0 +1,42 @@
+name: sgtm
+
+services:
+  appserver:
+    scanner: false
+    api: 3
+    type: lando
+    app_mount: false
+    ssl: true
+    meUser: root
+    entrypoint: '/nodejs/bin/node'
+    # Server-side GTM Docker image does not have a shell,
+    # and that causes (HTTP code 500) server error 
+    # - container ### is not connected to the network lando_bridge_network.
+    # So we use that as a base image but add a shell to it.
+    overrides:
+      build: ./.lando/appserver
+      image: my/sgtm:1.0.0
+    services:
+      environment:
+        CONTAINER_CONFIG: 'aXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=='
+        TZ: 'Europe/Bratislava'
+        RUN_AS_PREVIEW_SERVER: true
+        HOST: '0.0.0.0'
+        PORT: 80
+      command: 'server_bin.js'
+
+proxy:
+  appserver:
+    - sgtm.localhost
+
+tooling:
+  node:
+    service: appserver
+    cmd:
+      - /nodejs/bin/node
+
+# Check:
+# https://sgtm.localhost/healthz
+#
+# Documentation:
+# https://developers.google.com/tag-platform/tag-manager/server-side/manual-setup-guide
