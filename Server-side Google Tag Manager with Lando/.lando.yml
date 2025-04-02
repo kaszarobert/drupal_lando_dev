@@ -1,7 +1,7 @@
 name: sgtm
 
 services:
-  appserver:
+  sgtm:
     scanner: false
     api: 3
     type: lando
@@ -14,7 +14,7 @@ services:
     # - container ### is not connected to the network lando_bridge_network.
     # So we use that as a base image but add a shell to it.
     overrides:
-      build: ./.lando/appserver
+      build: ./.lando/sgtm
       image: my/sgtm:1.0.0
     services:
       environment:
@@ -26,12 +26,12 @@ services:
       command: 'server_bin.js'
 
 proxy:
-  appserver:
+  sgtm:
     - sgtm.localhost
 
 tooling:
   node:
-    service: appserver
+    service: sgtm
     cmd:
       - /nodejs/bin/node
 
