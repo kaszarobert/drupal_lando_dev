@@ -369,7 +369,7 @@ A `.lando/php.ini`-be tegyük be ezt a sort:
 
 ```
 [mail function]
-sendmail_path = /usr/local/bin/mailpit sendmail -S mailpit:1025 -t -i
+sendmail_path = /usr/local/bin/mailpit sendmail -S OLDALNEV_mailpit_1:1025 -t -i
 ```
 
 Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y` és a http://mail.OLDALNEV.localhost oldalon fogod látni a kimenő e-maileket.
