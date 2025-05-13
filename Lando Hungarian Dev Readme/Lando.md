@@ -376,6 +376,24 @@ Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y` és a http:
 
 Ebben az esetben a Drupal oldalon nem kell változtatni beállítást, de azt ne felejtsd, hogy a Drupal alapból nem tud HTML e-maileket kiküldeni ilyen módon, azokra kell a Drupal Symfony Mailer modul.
 
+Egyéb info: parancssorból ha küldeni akarsz parancssorból próba e-mailt Mailpittel:
+
+- hozz létre egy email.txt fájlt:
+
+```
+To: kasza.robert@example.com
+From: kasza.robert@example.com
+Subject: Test Email3
+
+This is a test email sent using sendmail.
+
+```
+
+Majd futtasd:
+
+```
+/usr/local/bin/mailpit sendmail kasza.robert@example.com  < email.txt
+```
 
 ### Drush útvonalának manuális megadása
 
