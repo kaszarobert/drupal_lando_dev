@@ -376,7 +376,7 @@ Ezután ne felejtsük újraépíteni a projektet: `lando rebuild -y` és a http:
 
 Ebben az esetben a Drupal oldalon nem kell változtatni beállítást, de azt ne felejtsd, hogy a Drupal alapból nem tud HTML e-maileket kiküldeni ilyen módon, azokra kell a Drupal Symfony Mailer modul.
 
-Egyéb info: parancssorból ha küldeni akarsz parancssorból próba e-mailt Mailpittel:
+Egyéb info: ha küldeni akarsz parancssorból próba e-mailt Mailpittel:
 
 - hozz létre egy email.txt fájlt:
 
@@ -1253,7 +1253,7 @@ http://192.168.1.4:49159
 
 ### Nginx átirányítások
 
-Alapból a drupal9 recipe Apache-ot használ az egyszerűség végett. Ez átkapcsolható PHP-FPM+Ngix-re:
+Alapból a drupal9 recipe Apache-ot használ az egyszerűség végett. Ez átkapcsolható PHP-FPM+Nginx-re:
 
 - A .lando.yml-ben felül a config: alatt adjuk hozzá, hogy `via: nginx`
 
@@ -1286,7 +1286,7 @@ proxy:
 
 ```
 
-- Hozzuk létre a `.lando/default.conf` fájlt! Annak tartalma legyen alapból az, amit a Drupalos Nginx beállításra használ a Lando. Ezt kiderítheted a Lando Drupal recipe github repojából: https://github.com/lando/drupal/blob/main/recipes/drupal9/default.conf.tpl
+- Hozzuk létre a `.lando/default.conf` fájlt! Annak tartalma legyen alapból az, amit a Drupalos Nginx beállításra használ a Lando. Ezt kiderítheted a Lando Drupal recipe github repojából: https://github.com/lando/drupal/blob/main/config/drupal9/default.conf.tpl
 
 - Ehhez a fájlhoz kell adni az átirányításokat alulra, még a server { } blokkon belülre!
 
