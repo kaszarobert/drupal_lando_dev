@@ -7,6 +7,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
   - [Landofile írása](#landofile-írása)
     - [Magyarázat](#magyarázat)
     - [Hová tegyem őket](#hová-tegyem-őket)
+    - [Alap Lando config](#alap-lando-config)
     - [Szükséges port felszabadítása](#szükséges-port-felszabadítása)
     - [Alap környezet](#alap-környezet)
     - [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
@@ -72,6 +73,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 | Újraépítés (megváltozik a konténer konfiguráció) | `lando rebuild -y` |
 | Egy konténer újraépítése (csak így lehet egyesével szolgáltatásokat újraindítani: https://github.com/lando/lando/issues/1333) | `lando rebuild -s varnish -y` |
 | Minden site lekapcsolása | `lando poweroff` |
+| Lando-s pluginok frissítése | `lando update && lando setup` |
 | SSH az appserver konténerbe | `lando ssh` |
 | SSH a solr konténerbe | `lando ssh -s solr` |
 | SSH a solr konténerbe root felhasználóval | `lando ssh -s solr --user root` |
@@ -120,6 +122,20 @@ Ennek további előnye, hogy semmi körülmény között nem lesz port ütközé
 *Az esetleges működési hibák elkerülése végett ne futtassunk semmit a gépen a 80-as és a 443-as porton! Ha használnánk Apache-szervert és a vhostokat lokálisan, azt kapcsoljuk ki vagy konfiguráljuk át, hogy pl. a 8080-as porton fussanak!*
 
 Ez nem kötelező, de a kevesebb hibalehetőség végett javasolt. Ugyan a Lando keres másik portot ha a 80-as épp foglalt (8080, 8081 stb.), de nem biztos, hogy a futtatott segédprogramjaink és a kódbázisunk minden része ennyire flexibilisen tudja kezelni a portokat. Későbbi bonyodalmak elkerülése végett döntsük el, hogy natívan telepített szerverekkel akarunk fejleszteni, vagy konténerizálva Lando segítségét használva. Ha nem muszáj, ne keverjük a kettőt!
+
+### Alap Lando config
+
+Mielőtt `lando start` paranccsal indítanál oldalat első alkalommal, tedd ezt be a `/home/FELHASZNALONEVED/.lando/config.yml` fájlba (ha nem lenne ilyen, hozd létre):
+
+```
+bindAddress: 0.0.0.0
+channel: none
+maxKeyWarning: 50
+setup:
+  buildEngine: false
+
+```
+
 
 ### Alap környezet
 
