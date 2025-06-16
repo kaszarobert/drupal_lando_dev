@@ -85,6 +85,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
 | Naplók | `lando logs` |
 | Apache naplók | `lando logs -s appserver` |
 | Apache naplók élőben jelezve folyamatosan | `lando logs -s appserver -f` |
+| Legutóbbi 50 naplóbejegyzés | `lando logs | tail -n 50` |
 
 ## Landofile írása
 
