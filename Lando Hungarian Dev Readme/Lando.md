@@ -636,8 +636,10 @@ A `tooling:` alá ez kerüljön:
 Az oldal settings.php-jébe ezt kerüljön (a 0805aa0bc1 random számsort a Purge modul generálja ki, így az minden site-ra más lesz, úgyhogy nézzük meg a config fájlok közt a megfelelőt):
 
 ```
-$config['varnish_purger.settings.0805aa0bc1']['hostname'] = 'varnish.drupal1.localhost';
+$config['varnish_purger.settings.0805aa0bc1']['hostname'] = 'drupal1_varnish_1';
 $config['varnish_purger.settings.0805aa0bc1']['port'] = 80;
+$config['varnish_purger.settings.0805aa0bc1']['http_errors'] = FALSE;
+
 ```
 
 
