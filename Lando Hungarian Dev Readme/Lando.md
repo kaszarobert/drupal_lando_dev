@@ -1604,7 +1604,7 @@ lando testdebug --filter testPublishInPastWhenItIsDisabled  web/modules/contrib/
 
 #### Már feltelepített oldalhoz UI tesztek írása
 
-https://gitlab.com/weitzman/drupal-test-traits alapján.
+[https://gitlab.com/weitzman/drupal-test-traits](https://git.drupalcode.org/project/dtt/) alapján.
 
 11. 
 ```
