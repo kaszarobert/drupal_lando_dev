@@ -1705,7 +1705,8 @@ A `tooling:` alá még kerüljön be ez:
   ```
 
 15. Ezután javasolt egy custom modult létrehozni, és abban a `drush gen test:existing` vagy `drush gen test:existing-js` segédszkripttel létrehozni a kiinduló teszt osztályokat abba a custom modulba. Ne felejtsd el, hogy itt is érvényes a class autoloading miatt, hogy minden teszt osztály a megfelelő útvonalon kell, hogy legyen és a fájlnév mindig `*Test.php` formájú legyen! Tehát pl. `AjaxTest2.php` rossz, `AjaxTest.php` a jó. A tesztek futtatása ugyanúgy történik, mint előbb, csak a `lando testdtd` segédparancsot használd!
-
+    Segéd utility osztályokhoz is a Drupal Test Traits saját autoload.php-ja miatt azok is vagy a 
+tests/src/ExistingSite vagy a tests/src/ExistingSiteJavascript alá menjenek (mehetnek ezalá "Utility", "Helper", stb. mappákba is), és a classnév is Test-re végződjön, és a fájlnév mindig `*Test.php` ezeknél a segéd utility osztályoknál is. Így nem kell az autoloadert módosítani.
 
 ### PHPStan futtatása
 
