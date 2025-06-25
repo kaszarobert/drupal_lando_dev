@@ -1639,6 +1639,9 @@ A `tooling:` alá még kerüljön be ez:
   ```
   cp vendor/weitzman/drupal-test-traits/docs/phpunit.xml phpunit_dtt.xml
   ```
+
+  Ebben az egyszerűbb fejlesztés kedvéért cseréld le a `bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php` sort `bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap.php` tehát ne a bootstrap-fast.php legyen az osztály autoloader, mert azzal csak a Test végződésű osztályok töltődnek be rendesen, és a parent class extend se működik benne megfelelően!
+  
 14. phpunit_dtt.xml minta fájl:
 
   ```
@@ -1656,7 +1659,7 @@ A `tooling:` alá még kerüljön be ez:
      for explanation on how to register those classes.
 -->
 <phpunit
-  bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php"
+  bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap.php"
   printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter"
 >
     <php>
@@ -1706,7 +1709,7 @@ A `tooling:` alá még kerüljön be ez:
 
 15. Ezután javasolt egy custom modult létrehozni, és abban a `drush gen test:existing` vagy `drush gen test:existing-js` segédszkripttel létrehozni a kiinduló teszt osztályokat abba a custom modulba. Ne felejtsd el, hogy itt is érvényes a class autoloading miatt, hogy minden teszt osztály a megfelelő útvonalon kell, hogy legyen és a fájlnév mindig `*Test.php` formájú legyen! Tehát pl. `AjaxTest2.php` rossz, `AjaxTest.php` a jó. A tesztek futtatása ugyanúgy történik, mint előbb, csak a `lando testdtd` segédparancsot használd!
     Segéd utility osztályokhoz is a Drupal Test Traits saját autoload.php-ja miatt azok is vagy a 
-tests/src/ExistingSite vagy a tests/src/ExistingSiteJavascript alá menjenek (mehetnek ezalá "Utility", "Helper", stb. mappákba is), és a classnév is Test-re végződjön, és a fájlnév mindig `*Test.php` ezeknél a segéd utility osztályoknál is. Így nem kell az autoloadert módosítani.
+tests/src/ExistingSite vagy a tests/src/ExistingSiteJavascript alá menjenek (mehetnek ezalá "Utility", "Helper", stb. mappákba is). Ha egy class neve Test-re végződik, és nincs benne asserteket tartalmazó teszt metódus, akkor arra Warningot fog dobni a PhpUnit, ezért a segéd class-okanak találj ki valami más nevet!
 
 ### PHPStan futtatása
 
