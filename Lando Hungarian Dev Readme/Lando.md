@@ -1147,10 +1147,14 @@ RUN docker-php-ext-install sockets
 # Headless Chrome telepítése.
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get update && apt-get install google-chrome-stable -y && apt --fix-broken install
+RUN apt-get update && \
+    apt-get install -y chromium chromium-driver
+# Google Chrome alias a Chromiumhoz
+RUN ln -s /usr/bin/chromium /usr/bin/google-chrome
 
 ```
-Ne felejtsd el, hogyha Nginx-et használ a projekt, akkor az első sorban a PHP-FPM-es image-et kell használnod: `FROM devwithlando/php:8.1-fpm-4`
+
+Itt telepíthetnénk a google-chrome-stable is, csak az ARM processzoros gépen nem települ fel, ezért használjuk a chromiumot. Ne felejtsd el, hogyha Nginx-et használ a projekt, akkor az első sorban a PHP-FPM-es image-et kell használnod: `FROM devwithlando/php:8.1-fpm-4`
 
 A `tooling:` alá ez kerüljön: (ha kívülről parancssorból meg akarjuk hívni a Headless Chrome-ot manuálisan)
 
