@@ -38,10 +38,10 @@ tooling:
     cmd: "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P he11oTHERE -C"
 
 # Create your database:
-# lando sqlcmd -q "CREATE DATABASE database1;"
+# lando sqlcmd -Q "CREATE DATABASE database1;"
 #
 # Access the MSSQL via "PROJECTNAME_database_1" on port "1433" username "sa" password "he11oTHERE".
 # Access externally with your IP and port displayed on lando info. You also need bindAddress: 0.0.0.0 in global Lando config, see https://docs.lando.dev/config/security.html#_1-changing-the-bind-address
 #
 # SQL cli example:
-# lando sqlcmd -d database1 -C -q "SELECT TOP (50) * FROM [dbo].[test_table1]"
+# lando sqlcmd -d database1 -C -Q "SELECT TOP (50) * FROM [dbo].[test_table1]"
