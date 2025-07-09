@@ -7,7 +7,7 @@ services:
     type: lando
     services:
       user: root
-      image: mcr.microsoft.com/mssql/server:2022-latest
+      image: mcr.microsoft.com/mssql/server:2022-CU19-ubuntu-22.04
       command: /opt/mssql/bin/sqlservr
       volumes:
         - mssql:/var/opt/mssql
