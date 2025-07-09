@@ -1,0 +1,37 @@
+name: mssql
+
+services:
+  database:
+    type: mssql:2022-latest
+    portforward: true
+    creds:
+#      user: sa # Not configurable, yet. See https://github.com/lando/mssql/issues/4
+      password: he11oTHERE
+#      database: database1 # Not configurable, yet. See https://github.com/lando/mssql/issues/4
+
+  adminer:
+    scanner: false
+    api: 3
+    type: lando
+    services:
+      image: dehy/adminer
+      command: /bin/s6-svscan /etc/services.d
+    portforward: true
+
+proxy:
+  adminer:
+    - pma.mssql.localhost
+
+tooling:
+  sqlcmd:
+    service: database
+    cmd: "sqlcmd -S localhost -U sa -P he11oTHERE -C"
+
+# Create your database:
+# lando sqlcmd -q "CREATE DATABASE database1;"
+#
+# Access the MSSQL via "PROJECTNAME_database_1" on port "1433"
+# Access externally with your IP and port displayed on lando info. You also need bindAddress: 0.0.0.0 in global Lando config, see https://docs.lando.dev/config/security.html#_1-changing-the-bind-address
+#
+# SQL cli example:
+# lando sqlcmd -d database1 -C -q "SELECT TOP (50) * FROM [dbo].[test_table1]"
