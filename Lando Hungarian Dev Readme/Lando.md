@@ -1492,12 +1492,17 @@ Figyelem! Drupal 10.3 vagy régebbi esetén a `MINK_DRIVER_ARGS_WEBDRIVER` vált
 
   ```
 lando composer require drupal/core-dev --dev --with-all-dependencies
+  ```
+
+4. Figyelem! Drupal 10 vagy régebbi esetén még kell ez is: `lando composer require --dev phpspec/prophecy-phpunit`
+
+5. (ez csak akkor kell, ha contrib modulok függőségeivel akarsz tesztelni - lehet hogy behúz feleslegesen sok dev modult)
+
+  ```
 lando composer require --dev wikimedia/composer-merge-plugin
   ```
 
-  Figyelem! Drupal 10 vagy régebbi esetén még kell ez is: `lando composer require --dev phpspec/prophecy-phpunit`
-
-4. composer.json-ba tedd az "extra" alá ezt: (ezzel biztosítjuk, hogyha egy modul a tesztekhez más modult igényel a másikkal való együttműködés tesztelésére, akkor az is legyen letöltve)
+   composer.json-ba tedd az "extra" alá ezt: (ezzel biztosítjuk, hogyha egy modul a tesztekhez más modult igényel a másikkal való együttműködés tesztelésére, akkor az is legyen letöltve)
 
   ```
         "merge-plugin": {
@@ -1507,8 +1512,7 @@ lando composer require --dev wikimedia/composer-merge-plugin
             ]
         }
   ```
-
-5. Utána `lando composer update` (A `--lock` paraméterrel futtatva nem csinálna semmit)
+  Utána `lando composer update` (A `--lock` paraméterrel futtatva nem csinálna semmit)
 
 6. Utána másold ki a `web/core/phpcs.xml.dist` fájlt a gyökérmappára a .lando.yml mellé!
 
