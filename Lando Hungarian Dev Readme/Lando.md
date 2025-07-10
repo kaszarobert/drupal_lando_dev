@@ -962,13 +962,24 @@ Ennek a megközelítésnek az a hátránya, hogy ahányszor újraindítod a Wind
    
      2) A megjelenő ablakban bal oldalt a + gombra kattintva válasszuk a "From Docker, Vagrant ..." opciót!
    
-     3) SSH helyett válasszuk ki a Docker radio buttont!
+     3) SSH helyett válasszuk ki a "Docker Compose" radio buttont!
    
-     4) Server: legyen az 1. pontban létrehozott Docker.
+     4) Server: Docker.
    
-     5) Image name: pedig az "appserver" konténerhez használt image. Ez valami ilyesmi nevű lesz: "devwithlando/php:7.4-apache-4" ha az alapértelmezett van használva a `.lando.yml` fájlban (ha Nginx van használva, akkor ez "devwithlando/php:7.4-fpm-4"). Ezért mindenképpen ellenőrizzük le a `.lando.yml` fájlban, hogy nem-e használ az oldal saját image-et, mert akkor azt kell itt megadni!
+     5) Configuration files: nyomjunk a jobb oldali mappa ikonra, és a `/home/FELHASZNALOD/.lando/compose/PROJEKTNEV/` mappa alatt jelölj ki MINDEN yml-t! és kattints az OK gombra!
+
+     6) Service: appserver
+
+     7) Mentsük el OK-val
+
+     7) Felül Name legyen `Lando`
+
+     8) Lifecycle alatt legyen bejelölve a `Connect to existing container (docker-compose exec)`
+     
+     9) Mentsük el OK-val mindent.
+  
+  A Path mappings-nél ellenőrizzük, hogy a projekt mappája az a /app-ként legyen mappelve a konténeren belül. Elvileg ezt kiolvassa a Lando által generált docker-compose.yml fájlokból, de ha nem, akkor pl. a /opt/project-ről is módosítsuk /app-ra!
    
-     6) Mentsük el OK-val mindent.
 
 3. Debug port beállítása
 
@@ -1207,13 +1218,13 @@ PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibák
 - PHP CLI Interpreter legyen a docker konténerben lévő PHP-re beállítva (valami hasonló ehhez a nevűhöz: devwithlando/php:7.4-apache-4, avagy Nginx használata esetén devwithlando/php:7.4-fpm-4, vigyázz a PHP-verziókra, hogy biztos jót válassz ki. Ha saját, Dockerfile-al buildelt szervert használ az oldal, akkor azt kell itt megadni)
 - Languages & Frameworks > PHP > Quality Tools oldalon kattints a Configuration sornál a ... gombra:
   - bal oldalt a + gombbal add hozzá a ugyanazt a dockeres PHP CLI Interpretert, mint előbb.
-  - PHP_CondeSniffer path: `/opt/project/vendor/bin/phpcs` (ne a Local, hanem a dockeres interpreterhez állítsd az útvonalat, ezt )
-  - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/opt/project/vendor/bin/phpcbf`
+  - PHP_CondeSniffer path: `/app/vendor/bin/phpcs` (ne a Local, hanem a dockeres interpreterhez állítsd az útvonalat, ezt )
+  - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/app/vendor/bin/phpcbf`
 - Editor > Inspections > PHP > Quality Tools > PHP_CodeSniffer legyen bepipálva, és jobb oldalt:
   - Show warning as: `Weak warning`
   - Check files with extensions: `php,module,inc,install,test,profile,theme,css,info,txt,md`
   - Coding standard: `Custom`, majd a mellette lévő ... gombra kattintva az ablakban:
-  - Path to ruleset: `/opt/project/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml`
+  - Path to ruleset: `/app/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml`
 
 Forrás:
 
@@ -1714,6 +1725,26 @@ A `tooling:` alá még kerüljön be ez:
 15. Ezután javasolt egy custom modult létrehozni, és abban a `drush gen test:existing` vagy `drush gen test:existing-js` segédszkripttel létrehozni a kiinduló teszt osztályokat abba a custom modulba. Ne felejtsd el, hogy itt is érvényes a class autoloading miatt, hogy minden teszt osztály a megfelelő útvonalon kell, hogy legyen és a fájlnév mindig `*Test.php` formájú legyen! Tehát pl. `AjaxTest2.php` rossz, `AjaxTest.php` a jó. A tesztek futtatása ugyanúgy történik, mint előbb, csak a `lando testdtd` segédparancsot használd!
     Segéd utility osztályokhoz is a Drupal Test Traits saját autoload.php-ja miatt azok is vagy a 
 tests/src/ExistingSite vagy a tests/src/ExistingSiteJavascript alá menjenek (mehetnek ezalá "Utility", "Helper", stb. mappákba is). Ha egy class neve Test-re végződik, és nincs benne asserteket tartalmazó teszt metódus, akkor arra Warningot fog dobni a PhpUnit, ezért a segéd class-okanak találj ki valami más nevet!
+
+
+#### Tesztek indítása phpStormból
+
+1. Végezd el a PHP language level és CLI interpreter, Servers beállítását (Lásd: "phpStorm beállítása debugolásra")
+
+2. File > Settings > PHP > Test Frameworks, jobb oldalt + gombbal adj hozzá újat "PHPUnit by Remote Interpreter", az Interpreter a létrehozott `Lando` legyen!
+
+3. Use Composer autoloader legyen bejelölve
+
+4. Path to script: `/app/vendor/autoload.php`
+
+5. Test runner alatt a Default configuration file: `/app/phpunit_dtt.lando.xml`
+
+6. Mentsd el OK-val
+
+7. Egy teszt metódus neve mellett ha a zöld lejátszás ikonra kattintasz, akkor elindul phpStormban a teszt. Jobb klikkel az ikonon meg a teszt debugolását tudod elindítani. Természetesen debugolás előtt aktiválnod kell az xdebug extensiont, ami lassúsága miatt alapból le van tiltva a PHP-s image-ben: `lando xdebug debug`
+
+Forrás: https://gist.github.com/quentint/6331aa9a75313ed955b2ea20d33557af
+
 
 ### PHPStan futtatása
 
