@@ -54,6 +54,7 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
       - [Beállítás](#beállítás-1)
       - [Használat](#használat-1)
       - [Már feltelepített oldalhoz UI tesztek írása](#már-feltelepített-oldalhoz-ui-tesztek-írása)
+      - [Tesztek indítása phpStormból](#tesztek-indítása-phpstormból)
     - [PHPStan futtatása](#phpstan-futtatása)
     - [Google Cloud SDK Landoval](#google-cloud-sdk-landoval)
       - [Beállítás](#beállítás-2)
