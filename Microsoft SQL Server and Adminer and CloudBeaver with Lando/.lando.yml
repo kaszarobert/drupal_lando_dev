@@ -28,9 +28,25 @@ services:
       command: /bin/s6-svscan /etc/services.d
     portforward: true
 
+  cloudbeaver:
+    scanner: false
+    api: 3
+    type: lando
+    services:
+      image: dbeaver/cloudbeaver:25.1.2
+      command: /opt/cloudbeaver/launch-product.sh
+      ports:
+        - 8978
+      volumes:
+        - "./.lando/cloudbeaver/logs:/opt/cloudbeaver/logs"
+        - "./.lando/cloudbeaver/workspace:/opt/cloudbeaver/workspace"
+    portforward: true
+
 proxy:
   adminer:
     - pma.mssql.localhost
+  cloudbeaver:
+    - pma2.mssql.localhost:8978
 
 tooling:
   sqlcmd:
@@ -45,3 +61,5 @@ tooling:
 #
 # SQL cli example:
 # lando sqlcmd -d database1 -C -Q "SELECT TOP (50) * FROM [dbo].[test_table1]"
+
+# For cloudbeaver create a user cbadmin with password cBadmin0 on http://pma2.mssql.localhost/#/admin
