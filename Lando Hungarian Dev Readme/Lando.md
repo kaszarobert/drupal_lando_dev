@@ -1219,8 +1219,8 @@ PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibák
 - Végezd el a PHP language level és CLI interpreter, Servers beállítását (Lásd: "phpStorm beállítása debugolásra")
 - PHP CLI Interpreter legyen az így létrehozott Lando
 - Languages & Frameworks > PHP > Quality Tools oldalon kattints a Configuration sornál a ... gombra:
-  - bal oldalt a + gombbal add hozzá a ugyanazt a dockeres PHP CLI Interpretert, mint előbb.
-  - PHP_CondeSniffer path: `/app/vendor/bin/phpcs` (ne a Local, hanem a dockeres interpreterhez állítsd az útvonalat, ezt )
+  - bal oldalt a + gombbal add hozzá a ugyanazt a Lando Interpretert, mint előbb.
+  - PHP_CondeSniffer path: `/app/vendor/bin/phpcs`
   - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/app/vendor/bin/phpcbf`
 - Editor > Inspections > PHP > Quality Tools > PHP_CodeSniffer legyen bepipálva, és jobb oldalt:
   - Show warning as: `Weak warning`
