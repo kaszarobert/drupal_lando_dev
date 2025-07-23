@@ -1217,16 +1217,17 @@ lando phpcs /app/web/modules/contrib/admin_toolbar
 
 PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibákat, hogy ne kelljen mindig a konzolt futtatni újra és újra:
 - Végezd el a PHP language level és CLI interpreter, Servers beállítását (Lásd: "phpStorm beállítása debugolásra")
-- PHP CLI Interpreter legyen az így létrehozott Lando
-- Languages & Frameworks > PHP > Quality Tools oldalon kattints a Configuration sornál a ... gombra:
+- Languages & Frameworks > PHP > Quality Tools oldalon legyen az External formatters: PHP Code Beautifier and Fixer
+- Languages & Frameworks > PHP > Quality Tools > PHP_CodeSniffer oldalon Configuration mellett kattints a ... gombra:
   - bal oldalt a + gombbal add hozzá a ugyanazt a Lando Interpretert, mint előbb.
-  - PHP_CondeSniffer path: `/app/vendor/bin/phpcs`
+  - PHP_CodeSniffer path: `/app/vendor/bin/phpcs`
   - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/app/vendor/bin/phpcbf`
-- Editor > Inspections > PHP > Quality Tools > PHP_CodeSniffer legyen bepipálva, és jobb oldalt:
-  - Show warning as: `Weak warning`
-  - Check files with extensions: `php,module,inc,install,test,profile,theme,css,info,txt,md`
-  - Coding standard: `Custom`, majd a mellette lévő ... gombra kattintva az ablakban:
-  - Path to ruleset: `/app/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml`
+- PHP_CodeSniffer inspection: ON
+- Show warning as: `Weak warning`
+- Check files with extensions: `php,module,inc,install,test,profile,theme,css,info,txt,md`
+- Coding standard: `Custom`, majd a mellette lévő ... gombra kattintva az ablakban:
+- Path to ruleset: `/app/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml`
+- OK gombbal mentsd el
 
 Forrás:
 
