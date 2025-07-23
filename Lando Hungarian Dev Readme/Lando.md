@@ -1216,7 +1216,8 @@ lando phpcs /app/web/modules/contrib/admin_toolbar
 ```
 
 PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibákat, hogy ne kelljen mindig a konzolt futtatni újra és újra:
-- PHP CLI Interpreter legyen a docker konténerben lévő PHP-re beállítva (valami hasonló ehhez a nevűhöz: devwithlando/php:7.4-apache-4, avagy Nginx használata esetén devwithlando/php:7.4-fpm-4, vigyázz a PHP-verziókra, hogy biztos jót válassz ki. Ha saját, Dockerfile-al buildelt szervert használ az oldal, akkor azt kell itt megadni)
+- Végezd el a PHP language level és CLI interpreter, Servers beállítását (Lásd: "phpStorm beállítása debugolásra")
+- PHP CLI Interpreter legyen az így létrehozott Lando
 - Languages & Frameworks > PHP > Quality Tools oldalon kattints a Configuration sornál a ... gombra:
   - bal oldalt a + gombbal add hozzá a ugyanazt a dockeres PHP CLI Interpretert, mint előbb.
   - PHP_CondeSniffer path: `/app/vendor/bin/phpcs` (ne a Local, hanem a dockeres interpreterhez állítsd az útvonalat, ezt )
