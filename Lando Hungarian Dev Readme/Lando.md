@@ -1221,6 +1221,7 @@ PHPStormban beállítható, hogy szerkesztés közben jelezze a codestyle hibák
 - Languages & Frameworks > PHP > Quality Tools > PHP_CodeSniffer oldalon Configuration mellett kattints a ... gombra:
   - bal oldalt a + gombbal add hozzá a ugyanazt a Lando Interpretert, mint előbb.
   - PHP_CodeSniffer path: `/app/vendor/bin/phpcs`
+  - Total process timeout: 10
   - PHP Code Beautifier and Fixer Settings-et nyisd le, és ott Path to phpcbf: `/app/vendor/bin/phpcbf`
 - PHP_CodeSniffer inspection: ON
 - Show warning as: `Weak warning`
