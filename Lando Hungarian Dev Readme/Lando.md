@@ -1778,6 +1778,7 @@ A composer.json mellé (vagy akár a modulon belül is contrib modul fejlesztés
 
 ```
 parameters:
+  reportUnmatchedIgnoredErrors: false
   level: 1
   paths:
     - web/modules/custom
