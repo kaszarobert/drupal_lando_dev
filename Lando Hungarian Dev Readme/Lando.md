@@ -1756,7 +1756,37 @@ Forrás: https://gist.github.com/quentint/6331aa9a75313ed955b2ea20d33557af
 
 ### PHPStan futtatása
 
-Ha a Drupalt feltelepítetted már, akkor a vendor mappában már a PHPStan ott lesz. Lando-val így tudod azt használni:
+Telepítsük fel:
+
+```
+lando composer require --dev phpstan/phpstan \
+  phpstan/extension-installer \
+  mglaman/phpstan-drupal \
+  phpstan/phpstan-deprecation-rules
+```
+
+Ha nem megy fel, próbáld régebbi verziókkal:
+
+```
+lando composer require --dev phpstan/phpstan:^1.0 \
+  phpstan/extension-installer \
+  mglaman/phpstan-drupal:^1.0 \
+  phpstan/phpstan-deprecation-rules:^1.0
+```
+
+A composer.json mellé (vagy akár a modulon belül is contrib modul fejlesztéskor) hozzunk létre egy `phpstan.neon` fájlt:
+
+```
+parameters:
+  level: 1
+  paths:
+    - web/modules/custom
+  ignoreErrors:
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+
+```
+
 
 A `tooling:` alá ez kerüljön:
 
@@ -1773,11 +1803,20 @@ Használat pl. "content_redirect_to_front" contrib modulon:
 lando phpstan analyze /app/web/modules/contrib/content_redirect_to_front
 ```
 
-Ha pedig pl. a modulnak van PHPStan ellenőrzési konfigurációja is:
+Megadhatsz PHPStan ellenőrzési levelt is:
+
+```
+lando phpstan analyze /app/web/modules/contrib/content_redirect_to_front -l 9
+```
+
+Ha pedig pl. a modulnak van PHPStan ellenőrzési konfigurációja is, azt is használhatod (drupal.org CI job így fogja futtatni):
 
 ```
 lando phpstan analyze /app/web/modules/contrib/content_redirect_to_front -c /app/web/modules/contrib/content_redirect_to_front/phpstan.neon
 ```
+
+Forrás: https://www.drupal.org/docs/develop/development-tools/phpstan/getting-started
+
 
 ### Google Cloud SDK Landoval
 
