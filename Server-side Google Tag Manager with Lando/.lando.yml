@@ -20,6 +20,31 @@ services:
       environment:
         CONTAINER_CONFIG: 'aXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=='
         TZ: 'Europe/Bratislava'
+        RUN_AS_PREVIEW_SERVER: false
+        PREVIEW_SERVER_URL: 'https://preview.sgtm.localhost'
+        HOST: '0.0.0.0'
+        PORT: 80
+      command: 'server_bin.js'
+
+  sgtmp:
+    scanner: false
+    api: 3
+    type: lando
+    app_mount: false
+    ssl: true
+    meUser: root
+    entrypoint: '/nodejs/bin/node'
+    # Server-side GTM Docker image does not have a shell,
+    # and that causes (HTTP code 500) server error 
+    # - container ### is not connected to the network lando_bridge_network.
+    # So we use that as a base image but add a shell to it.
+    overrides:
+      build: ./.lando/sgtm
+      image: my/sgtm:1.0.0
+    services:
+      environment:
+        CONTAINER_CONFIG: 'aXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=='
+        TZ: 'Europe/Bratislava'
         RUN_AS_PREVIEW_SERVER: true
         HOST: '0.0.0.0'
         PORT: 80
@@ -28,12 +53,15 @@ services:
 proxy:
   sgtm:
     - sgtm.localhost
+  sgtmp:
+    # Preview does not work for local domains, need to be public domain, so Google could reach that.
+    - preview.sgtm.localhost
 
-tooling:
-  node:
-    service: sgtm
-    cmd:
-      - /nodejs/bin/node
+#tooling:
+#  node:
+#    service: sgtm
+#    cmd:
+#      - /nodejs/bin/node
 
 # Check:
 # https://sgtm.localhost/healthz
