@@ -12,10 +12,10 @@ services:
       ports:
         - '15672' # RabbitMQ Management UI
         - '5672' # RabbitMQ Messaging Port. Replace to '5672:5672' to expose to localhost.
-      #volumes:
-      #  - rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
+      hostname: 'mabbit' # Important! After each container removal, RabbitMQ assigns a random hostname, so queues created on previous hostnames will not be used anymore. It is better to specify a constant hostname to make RabbitMQ fully persistent.
+      volumes:
+        - "./data:/var/lib/rabbitmq/mnesia/"
       environment:
-        #RABBITMQ_DEFAULT_VHOST: my_vhost
         RABBITMQ_DEFAULT_USER: admin
         RABBITMQ_DEFAULT_PASS: admin
 

@@ -13,12 +13,17 @@ def receive_message():
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='hello', durable=True)
 
     def callback(ch, method, properties, body):
         print(f" [x] Received {body}")
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    channel.basic_consume(queue='hello', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(
+        queue='hello',
+        on_message_callback=callback,
+        auto_ack=False
+    )
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

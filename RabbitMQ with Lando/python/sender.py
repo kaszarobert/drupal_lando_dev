@@ -13,9 +13,16 @@ def send_message():
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
  
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='hello', durable=True)
 
-    channel.basic_publish(exchange='', routing_key='hello', body='Hello World!')
+    channel.basic_publish(
+        exchange='',
+        routing_key='hello',
+        body='Hello World!',
+        properties=pika.BasicProperties(
+            delivery_mode=2,  # 2 = persistent
+        )
+    )
     print(" [x] Sent 'Hello World!'")
 
     connection.close()
