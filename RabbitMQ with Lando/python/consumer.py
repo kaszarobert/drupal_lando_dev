@@ -15,10 +15,13 @@ def receive_message():
 
     channel.queue_declare(queue='hello', durable=True)
 
+
     def callback(ch, method, properties, body):
         print(f" [x] Received {body}")
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
+    channel.basic_qos(prefetch_count=1)
+    
     channel.basic_consume(
         queue='hello',
         on_message_callback=callback,
