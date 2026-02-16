@@ -1,0 +1,53 @@
+name: rabbitmq
+
+services:
+  rabbitmq:
+    scanner: false
+    api: 3
+    type: lando
+    app_mount: delegated
+    services:
+      image: rabbitmq:4.2.3-management
+      command: "rabbitmq-server"
+      ports:
+        - '15672' # RabbitMQ Management UI
+        - '5672' # RabbitMQ Messaging Port. Replace to '5672:5672' to expose to localhost.
+      #volumes:
+      #  - rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
+      environment:
+        #RABBITMQ_DEFAULT_VHOST: my_vhost
+        RABBITMQ_DEFAULT_USER: admin
+        RABBITMQ_DEFAULT_PASS: admin
+
+  python:
+    type: python:3.12
+    command: tail -f /dev/null
+    run:
+      - pip install -r /app/python/requirements.txt
+
+proxy:
+  rabbitmq:
+    - rabbitmq.localhost:15672
+    - amqp.rabbitmq.localhost:5672
+
+tooling:
+  rabbitmqctl:
+    service: rabbitmq
+    user: root
+  rabbitmqip:
+    service: rabbitmq
+    cmd:    
+      - echo "\e[36mRABBITMQ IP ADDRESS:\e[32m"
+      - hostname -i | cut -d' ' -f1
+  python:
+    service: python
+  pip:
+    service: python
+
+# To demonstrate the usage:
+# After lando start, start the consumer that'll listen until Ctrl+C is pressed:
+# lando python python/consumer.py
+#
+# In a separate CLI window, you can send messages 
+# and observe the consumer CLI that it is processing it.
+# lando python python/sender.py
