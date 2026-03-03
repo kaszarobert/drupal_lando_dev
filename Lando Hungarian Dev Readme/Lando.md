@@ -792,6 +792,7 @@ A `services:` alá ez kerüljön: (ha már van appserver kulcsú elem a services
       environment:
         PHP_IDE_CONFIG: "serverName=appserver"
         XDEBUG_MODE:
+        DRUSH_ALLOW_XDEBUG: 1
 
 ```
 
