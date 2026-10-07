@@ -7,8 +7,8 @@ Docker-alapú fejlesztői környezet Drupal oldalhoz egy paranccsal indítva. A 
   - [Landofile írása](#landofile-írása)
     - [Magyarázat](#magyarázat)
     - [Hová tegyem őket](#hová-tegyem-őket)
-    - [Alap Lando config](#alap-lando-config)
     - [Szükséges port felszabadítása](#szükséges-port-felszabadítása)
+    - [Alap Lando config](#alap-lando-config)
     - [Alap környezet](#alap-környezet)
     - [Egyéni PHP beállítások az appserverhez](#egyéni-php-beállítások-az-appserverhez)
     - [Másik fajta adatbázis-szerver beállítása](#másik-fajta-adatbázis-szerver-beállítása)
@@ -1499,7 +1499,13 @@ Figyelem! Drupal 10.3 vagy régebbi esetén a `MINK_DRIVER_ARGS_WEBDRIVER` vált
 lando composer require drupal/core-dev --dev --with-all-dependencies
   ```
 
-4. Figyelem! Drupal 10 vagy régebbi esetén még kell ez is: `lando composer require --dev phpspec/prophecy-phpunit`
+4. Figyelem: Drupal 12 óta a drupal/core csomag speciális, törölve vannak belőle tárhely spórolás végett a tesztek és az azt futtató php fájlok, ezért meg kell mondani a composernek, hogy ne a dist csomagot, hanem töltse le a git repoból a teljes Drupal core kódját mindenestül:
+
+  ```
+lando composer reinstall drupal/core --prefer-source --no-scripts
+  ```
+ 
+  Figyelem! Drupal 10 vagy régebbi esetén még kell ez is: `lando composer require --dev phpspec/prophecy-phpunit`
 
 5. (ez csak akkor kell, ha contrib modulok függőségeivel akarsz tesztelni - lehet hogy behúz feleslegesen sok dev modult)
 
@@ -1546,7 +1552,7 @@ mkdir -p web/sites/simpletest/browser_output
 
 10. (Ez a lépés nem kell már Drupal 10-től, átugorhatod. Ha esetleg nem futnának le contrib modul tesztek, csak akkor vesződj ezzel) Ha egész modulok tesztjeit is akarod futtatni, akkor azokra ki kell javítani az útvonalakat a phpunit.xml-ben. Meg kell adnod, az XML-fájlhoz képest relatívan hol vannak tesztek. Ez az XML-felépítés Drupal verziónként más lehet, így a következő mintakód csak afféle útmutató, mintsem valódi kimásolandó kód:
 
-```
+  ```
   <testsuites>
     <testsuite name="unit">
       <file>web/core/tests/TestSuites/UnitTestSuite.php</file>
@@ -1589,7 +1595,26 @@ mkdir -p web/sites/simpletest/browser_output
       <directory>web/sites</directory>
      </whitelist>
   </filter>
-```
+  ```
+
+11. Drupal 11 és 12 óta ha több custom modul be van kapcsolva az aktívan működő feltelepített Drupal oldalon, azok hookjai deprecated üzeneteket dobálhatnak egymás teszteire. Hogy ne keveredjenek ezek az üzenetek és ne kelljen minden modulnak külön Drupal telepítés, add meg:
+  
+  - settings.php legelejére a `<?php` utáni sorba:
+
+  ```
+// Let PHPUnit functional tests boot without this site (see phpunit.xml).
+if (PHP_SAPI === 'cli' && getenv('DRUPAL_TEST_NO_PARENT_SITE')) {
+  return;
+}
+  ```
+
+  - a phpunit.xml fájlhoz add hozzá az elején lévő `<php>` elem alá:
+
+  ```  
+    <!-- Boot functional tests without sites/default (see settings.php). -->
+    <env name="DRUPAL_TEST_NO_PARENT_SITE" value="1"/>
+  ```
+
 
 #### Használat
 
